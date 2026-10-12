@@ -1,0 +1,16 @@
+# Confidential: real site data and raw research notes
+docs/research/
+
+# Real site documents must never be committed
+*.dwg
+*.dxf
+*.xlsx
+*.xls
+*.pdf
+!docs/**/examples/*.pdf
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
