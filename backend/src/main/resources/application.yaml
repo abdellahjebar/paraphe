@@ -1,3 +1,12 @@
 spring:
   application:
-    name: backend
+    name: paraphe-backend
+  datasource:
+    # Local defaults match compose.yaml. Production must set DATABASE_* explicitly.
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5433/paraphe}
+    username: ${DATABASE_USER:paraphe}
+    password: ${DATABASE_PASSWORD:paraphe}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate

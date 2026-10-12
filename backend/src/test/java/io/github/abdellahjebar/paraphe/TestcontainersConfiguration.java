@@ -7,12 +7,15 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
-class TestcontainersConfiguration {
+public class TestcontainersConfiguration {
+
+    /** Same major version as compose.yaml, so tests run against what development uses. */
+    private static final String POSTGRES_IMAGE = "postgres:17-alpine";
 
     @Bean
     @ServiceConnection
     PostgreSQLContainer postgresContainer() {
-        return new PostgreSQLContainer(DockerImageName.parse("postgres:latest"));
+        return new PostgreSQLContainer(DockerImageName.parse(POSTGRES_IMAGE));
     }
 
 }
