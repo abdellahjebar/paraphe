@@ -34,12 +34,12 @@ an automated test, not by convention.
 
 ## Alternatives considered
 
-- **C# / ASP.NET Core**: equally capable for this domain. Rejected because it
-  brings no benefit for the developer's curriculum (Java course in the M1) and is
-  less represented in the target job market.
-- **TypeScript / NestJS**: would share types with the frontend. Rejected because
-  it is less aligned with the target market and the team wants a strongly typed,
-  mature ecosystem for the domain core.
+- **C# / ASP.NET Core**: equally capable for this domain. Not retained in favor
+  of the Java/Spring ecosystem, which is widely adopted in enterprise
+  environments.
+- **TypeScript / NestJS**: would share types with the frontend. Not retained
+  because the domain core benefits from a strongly typed, mature ecosystem with
+  first-class tooling for architecture tests.
 - **Microservices**: complexity without benefit at this scale. A modular
   monolith keeps the option of extracting a module later.
 - **jOOQ instead of JPA**: attractive for the follow-up dashboard queries.
