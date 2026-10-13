@@ -6,6 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.github.abdellahjebar.paraphe.TestcontainersConfiguration;
 import io.github.abdellahjebar.paraphe.audit.domain.AuditEvent;
 import io.github.abdellahjebar.paraphe.audit.port.AuditLog;
+import io.github.abdellahjebar.paraphe.projects.domain.Project;
+import io.github.abdellahjebar.paraphe.projects.domain.ReviewerRole;
+import io.github.abdellahjebar.paraphe.support.TestFixtures;
 import io.github.abdellahjebar.paraphe.reviews.domain.OpinionEffect;
 import io.github.abdellahjebar.paraphe.reviews.domain.OpinionStatus;
 import io.github.abdellahjebar.paraphe.reviews.domain.ReviewerId;
@@ -16,6 +19,7 @@ import io.github.abdellahjebar.paraphe.reviews.port.ReviewRepository;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,12 +46,24 @@ class ReviewServiceIntegrationTest {
     @Autowired
     private JdbcClient jdbc;
 
-    private final ReviewerId controlOffice = ReviewerId.random();
-    private final ReviewerId engineeringOffice = ReviewerId.random();
-    private final ReviewerId architect = ReviewerId.random();
+    @Autowired
+    private TestFixtures fixtures;
+
+    private Project project;
+    private ReviewerId controlOffice;
+    private ReviewerId engineeringOffice;
+    private ReviewerId architect;
+
+    @BeforeEach
+    void setUp() {
+        project = fixtures.project();
+        controlOffice = fixtures.participant(project.id(), ReviewerRole.CONTROL_OFFICE).id();
+        engineeringOffice = fixtures.participant(project.id(), ReviewerRole.ENGINEERING_OFFICE).id();
+        architect = fixtures.participant(project.id(), ReviewerRole.ARCHITECT).id();
+    }
 
     private RevisionId openReview(ReviewerId... expected) {
-        RevisionId revision = RevisionId.random();
+        RevisionId revision = fixtures.revision(project.id()).id();
         service.open(revision, Set.of(expected), "contractor");
         return revision;
     }
@@ -111,7 +127,7 @@ class ReviewServiceIntegrationTest {
         assertThat(countOpinions(revision)).isZero();
         assertThat(auditLog.findByTarget("REVISION", revision.value()))
                 .extracting(AuditEvent::type)
-                .containsExactly("ReviewOpened");
+                .containsExactly("RevisionSubmitted", "ReviewOpened");
     }
 
     @Test
@@ -121,10 +137,11 @@ class ReviewServiceIntegrationTest {
 
         List<AuditEvent> events = auditLog.findByTarget("REVISION", revision.value());
 
-        assertThat(events).extracting(AuditEvent::type).containsExactly("ReviewOpened", "OpinionGiven");
-        assertThat(events.get(0).actor()).isEqualTo("contractor");
-        assertThat(events.get(1).actor()).isEqualTo("reviewer:" + controlOffice.value());
-        assertThat(events.get(1).payload()).contains("VAO").contains("APPROVING_WITH_RESERVES");
+        assertThat(events).extracting(AuditEvent::type)
+                .containsExactly("RevisionSubmitted", "ReviewOpened", "OpinionGiven");
+        assertThat(events.get(1).actor()).isEqualTo("contractor");
+        assertThat(events.get(2).actor()).isEqualTo("reviewer:" + controlOffice.value());
+        assertThat(events.get(2).payload()).contains("VAO").contains("APPROVING_WITH_RESERVES");
     }
 
     @Test
@@ -132,8 +149,10 @@ class ReviewServiceIntegrationTest {
         RevisionId revision = openReview(controlOffice);
         service.recordOpinion(revision, controlOffice, VAO, "texte \"libre\" confidentiel");
 
-        assertThat(auditLog.findByTarget("REVISION", revision.value()).get(1).payload())
-                .doesNotContain("confidentiel");
+        assertThat(auditLog.findByTarget("REVISION", revision.value()))
+                .filteredOn(event -> event.type().equals("OpinionGiven"))
+                .singleElement()
+                .satisfies(event -> assertThat(event.payload()).doesNotContain("confidentiel"));
     }
 
     @Test
@@ -162,6 +181,29 @@ class ReviewServiceIntegrationTest {
                 .param("revision", revision.value())
                 .param("reviewer", architect.value())
                 .update())
+                .hasMessageContaining("foreign key");
+    }
+
+    @Test
+    void reviewerWhoIsNotAParticipantAtAllIsRefusedByTheDatabase() {
+        RevisionId revision = fixtures.revision(project.id()).id();
+
+        assertThatThrownBy(() -> service.open(revision, Set.of(ReviewerId.random()), "contractor"))
+                .hasMessageContaining("foreign key");
+    }
+
+    @Test
+    void reviewerFromAnotherProjectIsRefusedByTheDatabase() {
+        RevisionId revision = fixtures.revision(project.id()).id();
+        ReviewerId stranger = fixtures.participant(fixtures.project().id(), ReviewerRole.CONTROL_OFFICE).id();
+
+        assertThatThrownBy(() -> service.open(revision, Set.of(stranger), "contractor"))
+                .hasMessageContaining("does not belong to the project");
+    }
+
+    @Test
+    void reviewOfARevisionThatDoesNotExistIsRefusedByTheDatabase() {
+        assertThatThrownBy(() -> service.open(RevisionId.random(), Set.of(controlOffice), "contractor"))
                 .hasMessageContaining("foreign key");
     }
 

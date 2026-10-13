@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 class ArchitectureTest {
 
     private static final String BASE = "io.github.abdellahjebar.paraphe";
-    private static final String[] MODULES = {"audit", "reviews", "projects"};
+    private static final String[] MODULES = {"audit", "reviews", "projects", "documents"};
 
     private static JavaClasses classes;
 

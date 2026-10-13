@@ -10,6 +10,7 @@ import io.github.abdellahjebar.paraphe.projects.domain.Participant;
 import io.github.abdellahjebar.paraphe.projects.domain.Project;
 import io.github.abdellahjebar.paraphe.projects.domain.ProjectId;
 import io.github.abdellahjebar.paraphe.projects.domain.ReviewerRole;
+import io.github.abdellahjebar.paraphe.support.TestFixtures;
 import io.github.abdellahjebar.paraphe.reviews.application.ReviewService;
 import io.github.abdellahjebar.paraphe.reviews.domain.OpinionEffect;
 import io.github.abdellahjebar.paraphe.reviews.domain.OpinionStatus;
@@ -36,6 +37,9 @@ class ProjectServiceIntegrationTest {
 
     @Autowired
     private AuditLog auditLog;
+
+    @Autowired
+    private TestFixtures fixtures;
 
     @Autowired
     private JdbcClient jdbc;
@@ -104,7 +108,7 @@ class ProjectServiceIntegrationTest {
     void deactivatedStatusIsNotOfferedButPastOpinionsKeepIt() {
         Project project = newProject();
         Participant control = addControlOffice(project.id());
-        RevisionId revision = RevisionId.random();
+        RevisionId revision = fixtures.revision(project.id()).id();
         reviewService.open(revision, Set.of(control.id()), ACTOR);
         OpinionStatus vao = service.statuses(project.id()).stream()
                 .filter(s -> s.code().equals("VAO")).findFirst().orElseThrow();
