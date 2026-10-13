@@ -46,6 +46,14 @@ public class ProjectService {
         return project;
     }
 
+    /** Creates a project and makes its creator a member, in one step. */
+    public Project createProjectFor(java.util.UUID ownerUserId, String name, String actor) {
+        Project project = createProject(name, actor);
+        projects.addMember(project.id(), ownerUserId);
+        record("MemberGranted", actor, project.id(), JsonPayload.of("userId", ownerUserId.toString()));
+        return project;
+    }
+
     public WorkPackage addWorkPackage(ProjectId projectId, String code, String label, String actor) {
         requireProject(projectId);
         WorkPackage workPackage = new WorkPackage(code, label);

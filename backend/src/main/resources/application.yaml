@@ -6,3 +6,41 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5433/paraphe}
     username: ${DATABASE_USER:paraphe}
     password: ${DATABASE_PASSWORD:paraphe}
+  mvc:
+    problemdetails:
+      enabled: true
+
+server:
+  servlet:
+    session:
+      timeout: 8h
+      tracking-modes: cookie
+      cookie:
+        http-only: true
+        same-site: lax
+        # true in production (HTTPS); false only so a local http:// session cookie still works.
+        secure: ${SESSION_COOKIE_SECURE:false}
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-exception: false
+    include-binding-errors: never
+    whitelabel:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    # At DEBUG these log the request path, which on a review link is the secret token.
+    org.springframework.security: INFO
+    org.springframework.web: INFO
+    org.apache.catalina: INFO
+    org.apache.coyote: INFO

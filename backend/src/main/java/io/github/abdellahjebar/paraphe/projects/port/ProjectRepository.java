@@ -9,6 +9,7 @@ import io.github.abdellahjebar.paraphe.reviews.domain.ReviewerId;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 public interface ProjectRepository {
 
@@ -16,6 +17,14 @@ public interface ProjectRepository {
     void create(Project project, List<OpinionStatus> statuses);
 
     Optional<Project> find(ProjectId id);
+
+    /** Gives a user access to a project. Granting twice is harmless. */
+    void addMember(ProjectId projectId, UUID userId);
+
+    boolean isMember(ProjectId projectId, UUID userId);
+
+    /** Projects the user is a member of, most recent first. */
+    List<Project> projectsOf(UUID userId);
 
     boolean hasWorkPackage(ProjectId projectId, String code);
 

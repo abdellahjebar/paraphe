@@ -52,6 +52,42 @@ class JdbcProjectRepository implements ProjectRepository {
     }
 
     @Override
+    public void addMember(ProjectId projectId, UUID userId) {
+        jdbc.sql("""
+                INSERT INTO project_member (project_id, user_id) VALUES (:p, :u)
+                ON CONFLICT (project_id, user_id) DO NOTHING
+                """)
+                .param("p", projectId.value())
+                .param("u", userId)
+                .update();
+    }
+
+    @Override
+    public boolean isMember(ProjectId projectId, UUID userId) {
+        return jdbc.sql("SELECT EXISTS (SELECT 1 FROM project_member WHERE project_id = :p AND user_id = :u)")
+                .param("p", projectId.value())
+                .param("u", userId)
+                .query(Boolean.class)
+                .single();
+    }
+
+    @Override
+    public List<Project> projectsOf(UUID userId) {
+        return jdbc.sql("""
+                SELECT p.id, p.name, p.created_at
+                FROM project p JOIN project_member m ON m.project_id = p.id
+                WHERE m.user_id = :u
+                ORDER BY p.created_at DESC, p.id
+                """)
+                .param("u", userId)
+                .query((rs, n) -> new Project(
+                        new ProjectId(rs.getObject("id", UUID.class)),
+                        rs.getString("name"),
+                        rs.getObject("created_at", OffsetDateTime.class).toInstant()))
+                .list();
+    }
+
+    @Override
     public boolean hasWorkPackage(ProjectId projectId, String code) {
         return jdbc.sql("SELECT EXISTS (SELECT 1 FROM work_package WHERE project_id = :p AND code = :c)")
                 .param("p", projectId.value())
