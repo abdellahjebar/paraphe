@@ -5,7 +5,7 @@ import io.github.abdellahjebar.paraphe.identity.application.AuthenticationServic
 import io.github.abdellahjebar.paraphe.identity.application.UserAdminService;
 import io.github.abdellahjebar.paraphe.identity.domain.AppUser;
 import io.github.abdellahjebar.paraphe.identity.domain.UserId;
-import io.github.abdellahjebar.paraphe.identity.infrastructure.security.AuthenticatedUser;
+import io.github.abdellahjebar.paraphe.shared.security.AuthenticatedUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

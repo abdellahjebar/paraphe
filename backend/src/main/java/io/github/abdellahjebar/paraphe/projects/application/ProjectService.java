@@ -122,6 +122,11 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
+    public Project project(ProjectId projectId) {
+        return projects.find(projectId).orElseThrow(() -> new ProjectNotFoundException(projectId));
+    }
+
+    @Transactional(readOnly = true)
     public Set<ReviewerId> expectedReviewersFor(ProjectId projectId, String workPackageCode) {
         requireProject(projectId);
         if (!projects.hasWorkPackage(projectId, workPackageCode)) {

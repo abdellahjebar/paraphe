@@ -1,5 +1,6 @@
 package io.github.abdellahjebar.paraphe.identity.infrastructure.security;
 
+import io.github.abdellahjebar.paraphe.shared.security.AuthenticatedUser;
 import io.github.abdellahjebar.paraphe.projects.application.ProjectAccess;
 import io.github.abdellahjebar.paraphe.projects.domain.ProjectId;
 import java.util.UUID;

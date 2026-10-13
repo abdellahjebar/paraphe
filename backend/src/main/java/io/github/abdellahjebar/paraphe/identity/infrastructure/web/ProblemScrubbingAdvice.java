@@ -32,10 +32,20 @@ class ProblemScrubbingAdvice implements ResponseBodyAdvice<Object> {
                                   ServerHttpRequest request, ServerHttpResponse response) {
         if (body instanceof ProblemDetail problem) {
             problem.setInstance(null);
-            if (request.getURI().getPath().startsWith(REVIEWER_PREFIX)) {
+            String path = request.getURI().getPath();
+            // Always on review links; elsewhere only when the text would repeat the path.
+            if (path.startsWith(REVIEWER_PREFIX) || repeatsPath(problem.getDetail(), path)) {
                 problem.setDetail(null);
             }
         }
         return body;
+    }
+
+    private static boolean repeatsPath(String detail, String path) {
+        if (detail == null || path == null || path.length() < 2) {
+            return false;
+        }
+        String withoutLeadingSlash = path.startsWith("/") ? path.substring(1) : path;
+        return detail.contains(path) || detail.contains(withoutLeadingSlash);
     }
 }

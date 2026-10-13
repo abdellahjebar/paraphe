@@ -9,6 +9,10 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  jackson:
+    deserialization:
+      # A typo in a field name must fail loudly instead of being silently ignored.
+      fail-on-unknown-properties: true
 
 server:
   servlet:
