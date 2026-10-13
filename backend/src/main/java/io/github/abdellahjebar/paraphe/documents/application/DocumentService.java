@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Documents and their revisions. A submitted revision is stored, fingerprinted and journaled in one
@@ -86,6 +88,7 @@ public class DocumentService {
         }
 
         StoredFile stored = store(pdf);
+        discardOnRollback(stored);
         try {
             Revision revision = new Revision(RevisionId.random(), documentId,
                     documents.nextSequence(documentId), label, clock.instant(), stored,
@@ -105,6 +108,11 @@ public class DocumentService {
             discard(stored);
             throw e;
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Document document(DocumentId documentId) {
+        return documents.findDocument(documentId).orElseThrow(() -> new DocumentNotFoundException(documentId));
     }
 
     @Transactional(readOnly = true)
@@ -142,6 +150,24 @@ public class DocumentService {
         } catch (IOException e) {
             throw new UncheckedIOException("The file could not be stored", e);
         }
+    }
+
+    /**
+     * The file is written outside the database transaction. If an enclosing transaction fails after
+     * this method returned (a later step of a larger operation), the file must not be left behind.
+     */
+    private void discardOnRollback(StoredFile stored) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCompletion(int status) {
+                if (status != STATUS_COMMITTED) {
+                    discard(stored);
+                }
+            }
+        });
     }
 
     private void discard(StoredFile stored) {

@@ -47,8 +47,10 @@ class JdbcReviewRepository implements ReviewRepository {
     @Override
     public void appendOpinion(RevisionId revisionId, Opinion opinion) {
         jdbc.sql("""
-                INSERT INTO opinion (id, revision_id, reviewer_id, status_code, status_label, effect, comment, given_at)
-                VALUES (:id, :revisionId, :reviewerId, :statusCode, :statusLabel, :effect, :comment, :givenAt)
+                INSERT INTO opinion (id, revision_id, reviewer_id, status_code, status_label, effect, comment,
+                                     given_at, entered_by)
+                VALUES (:id, :revisionId, :reviewerId, :statusCode, :statusLabel, :effect, :comment,
+                        :givenAt, :enteredBy)
                 """)
                 .param("id", UUID.randomUUID())
                 .param("revisionId", revisionId.value())
@@ -58,6 +60,7 @@ class JdbcReviewRepository implements ReviewRepository {
                 .param("effect", opinion.status().effect().name())
                 .param("comment", opinion.comment())
                 .param("givenAt", OffsetDateTime.ofInstant(opinion.givenAt(), ZoneOffset.UTC))
+                .param("enteredBy", opinion.enteredBy())
                 .update();
     }
 
@@ -80,7 +83,7 @@ class JdbcReviewRepository implements ReviewRepository {
         RevisionReview review = new RevisionReview(revisionId, reviewers);
 
         List<Opinion> opinions = jdbc.sql("""
-                SELECT reviewer_id, status_code, status_label, effect, comment, given_at
+                SELECT reviewer_id, status_code, status_label, effect, comment, given_at, entered_by
                 FROM opinion
                 WHERE revision_id = :revisionId
                 ORDER BY seq
@@ -93,7 +96,8 @@ class JdbcReviewRepository implements ReviewRepository {
                                 rs.getString("status_label"),
                                 OpinionEffect.valueOf(rs.getString("effect"))),
                         rs.getString("comment"),
-                        rs.getObject("given_at", OffsetDateTime.class).toInstant()))
+                        rs.getObject("given_at", OffsetDateTime.class).toInstant(),
+                        rs.getString("entered_by")))
                 .list();
         opinions.forEach(review::record);
         return Optional.of(review);

@@ -56,16 +56,40 @@ public class ReviewService {
     /** Records a reviewer's opinion and returns the status the revision has afterwards. */
     public RevisionStatus recordOpinion(RevisionId revisionId, ReviewerId reviewerId,
                                         OpinionStatus status, String comment) {
-        RevisionReview review = load(revisionId);
         Opinion opinion = new Opinion(reviewerId, status, comment, now());
+        return append(revisionId, opinion, "reviewer:" + reviewerId.value(),
+                JsonPayload.of("statusCode", status.code(), "effect", status.effect().name()));
+    }
 
+    /**
+     * Records an opinion the contractor typed for a reviewer (an answer received by phone or message).
+     * The opinion and its journal event both say who entered it, so the proof never suggests the
+     * reviewer used their own link.
+     */
+    public RevisionStatus recordOpinionOnBehalf(RevisionId revisionId, ReviewerId reviewerId,
+                                                OpinionStatus status, String comment, String enteredBy) {
+        if (enteredBy == null || enteredBy.isBlank()) {
+            throw new IllegalArgumentException("who entered the opinion must be known");
+        }
+        Opinion opinion = new Opinion(reviewerId, status, comment, now(), enteredBy);
+        return append(revisionId, opinion, enteredBy.strip(),
+                JsonPayload.of("statusCode", status.code(), "effect", status.effect().name(),
+                        "onBehalfOf", reviewerId.value().toString()));
+    }
+
+    private RevisionStatus append(RevisionId revisionId, Opinion opinion, String actor, String payload) {
+        RevisionReview review = load(revisionId);
         review.record(opinion); // rejects a reviewer who was not asked
         reviews.appendOpinion(revisionId, opinion);
-        auditLog.append(AuditEvent.of("OpinionGiven", "reviewer:" + reviewerId.value(), TARGET_TYPE,
-                revisionId.value(),
-                JsonPayload.of("statusCode", status.code(), "effect", status.effect().name()),
+        auditLog.append(AuditEvent.of("OpinionGiven", actor, TARGET_TYPE, revisionId.value(), payload,
                 opinion.givenAt()));
         return review.status();
+    }
+
+    /** Every opinion given on a revision, oldest first. */
+    @Transactional(readOnly = true)
+    public java.util.List<Opinion> history(RevisionId revisionId) {
+        return load(revisionId).history();
     }
 
     @Transactional(readOnly = true)
