@@ -25,6 +25,8 @@ before inventing a new name.
 | Saisi par | `enteredBy` | Opinion recorded by the contractor on behalf of a reviewer, flagged as such |
 | Journal d'événements | `AuditEvent` | Append-only record of every action |
 | Entreprise | `Contractor` | The company submitting the documents |
+| Utilisateur | `AppUser` | A person with an account (the contractor side); reviewers never have one |
+| Membre de projet | `project_member` | A user allowed to see and change a project; anyone else gets "not found" |
 
 ## Status labels
 
