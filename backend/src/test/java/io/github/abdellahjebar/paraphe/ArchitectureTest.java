@@ -70,4 +70,14 @@ class ArchitectureTest {
                     .check(classes);
         }
     }
+
+    @Test
+    void theSharedKernelDependsOnNoModule() {
+        noClasses().that().resideInAPackage(BASE + ".shared..")
+                .should().dependOnClassesThat().resideInAnyPackage(
+                        BASE + ".audit..", BASE + ".reviews..", BASE + ".projects..", BASE + ".documents..",
+                        BASE + ".submission..", BASE + ".identity..", BASE + ".api..")
+                .because("the shared kernel exists to break cycles, so it must stay at the bottom")
+                .check(classes);
+    }
 }
