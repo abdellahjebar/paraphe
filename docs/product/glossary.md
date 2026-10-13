@@ -10,7 +10,8 @@ before inventing a new name.
 | Document | `Document` | An execution document: drawing, calculation note, method statement, data sheet |
 | Révision / indice | `Revision` | One version of a document, labelled by its index (A, B, C, REV1...) |
 | Intervenant | `Reviewer` | A project participant who gives opinions |
-| Rôle | `ReviewerRole` | `ARCHITECT`, `ENGINEERING_OFFICE`, `CONTROL_OFFICE` |
+| Rôle | `ReviewerRole` | `ARCHITECT`, `ENGINEERING_OFFICE`, `CONTROL_OFFICE`, `OTHER` (a role is added only once its need is confirmed) |
+| Spécialité | `specialty` | Free text that tells apart participants of the same role (for example structure, technical trades) |
 | Intervenant attendu | expected reviewer | A reviewer the revision was sent to, whose opinion is expected |
 | Avis / visa | `Opinion` | A reviewer's answer on one revision: a status and a comment |
 | Statut d'avis (VSO, VAO, VPI, NC, REF) | `OpinionStatus` | Configurable per project, each one has an effect |

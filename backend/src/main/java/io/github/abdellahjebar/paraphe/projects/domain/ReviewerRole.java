@@ -7,5 +7,7 @@ package io.github.abdellahjebar.paraphe.projects.domain;
 public enum ReviewerRole {
     ARCHITECT,
     ENGINEERING_OFFICE,
-    CONTROL_OFFICE
+    CONTROL_OFFICE,
+    /** A party the list does not name; its speciality says what it is. */
+    OTHER
 }

@@ -12,6 +12,7 @@ public record Participant(
         ProjectId projectId,
         String name,
         ReviewerRole role,
+        String specialty,
         String email,
         String phone,
         boolean active) {
@@ -25,6 +26,7 @@ public record Participant(
         if (name.isEmpty()) {
             throw new IllegalArgumentException("participant name must not be blank");
         }
+        specialty = blankToNull(specialty);
         email = blankToNull(email);
         phone = blankToNull(phone);
         if (email == null && phone == null) {

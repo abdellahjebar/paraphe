@@ -57,10 +57,11 @@ public class ProjectService {
         return workPackage;
     }
 
-    public Participant addParticipant(ProjectId projectId, String name, ReviewerRole role,
+    public Participant addParticipant(ProjectId projectId, String name, ReviewerRole role, String specialty,
                                       String email, String phone, String actor) {
         requireProject(projectId);
-        Participant participant = new Participant(ReviewerId.random(), projectId, name, role, email, phone, true);
+        Participant participant = new Participant(ReviewerId.random(), projectId, name, role, specialty,
+                email, phone, true);
         projects.addParticipant(participant);
         record("ParticipantAdded", actor, projectId,
                 JsonPayload.of("participantId", participant.id().value().toString(), "role", role.name()));

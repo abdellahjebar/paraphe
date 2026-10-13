@@ -45,7 +45,7 @@ class ProjectServiceIntegrationTest {
     }
 
     private Participant addControlOffice(ProjectId project) {
-        return service.addParticipant(project, "Bureau de contrôle", ReviewerRole.CONTROL_OFFICE,
+        return service.addParticipant(project, "Bureau de contrôle", ReviewerRole.CONTROL_OFFICE, null,
                 "controle@example.org", null, ACTOR);
     }
 
@@ -122,7 +122,7 @@ class ProjectServiceIntegrationTest {
         service.addWorkPackage(project.id(), "Lot 01", "Gros œuvre", ACTOR);
         Participant control = addControlOffice(project.id());
         Participant structure = service.addParticipant(project.id(), "BET structure",
-                ReviewerRole.ENGINEERING_OFFICE, "bet@example.org", null, ACTOR);
+                ReviewerRole.ENGINEERING_OFFICE, "Structure", "bet@example.org", null, ACTOR);
 
         service.setDefaultReviewers(project.id(), "Lot 01", Set.of(control.id(), structure.id()), ACTOR);
 
@@ -136,7 +136,7 @@ class ProjectServiceIntegrationTest {
         service.addWorkPackage(project.id(), "Lot 01", "Gros œuvre", ACTOR);
         Participant control = addControlOffice(project.id());
         Participant structure = service.addParticipant(project.id(), "BET structure",
-                ReviewerRole.ENGINEERING_OFFICE, "bet@example.org", null, ACTOR);
+                ReviewerRole.ENGINEERING_OFFICE, "Structure", "bet@example.org", null, ACTOR);
         service.setDefaultReviewers(project.id(), "Lot 01", Set.of(control.id()), ACTOR);
 
         service.setDefaultReviewers(project.id(), "Lot 01", Set.of(structure.id()), ACTOR);
@@ -247,10 +247,53 @@ class ProjectServiceIntegrationTest {
     void participantsOfAProjectAreListedWithTheirRole() {
         Project project = newProject();
         addControlOffice(project.id());
-        service.addParticipant(project.id(), "Architecte", ReviewerRole.ARCHITECT, null, "+212600000000", ACTOR);
+        service.addParticipant(project.id(), "Architecte", ReviewerRole.ARCHITECT, null, null,
+                "+212600000000", ACTOR);
 
         assertThat(service.participants(project.id()))
                 .extracting(Participant::role)
                 .containsExactlyInAnyOrder(ReviewerRole.CONTROL_OFFICE, ReviewerRole.ARCHITECT);
+    }
+
+    @Test
+    void specialtyTellsTwoEngineeringOfficesApart() {
+        Project project = newProject();
+        service.addParticipant(project.id(), "Bureau A", ReviewerRole.ENGINEERING_OFFICE, "Structure",
+                "a@example.org", null, ACTOR);
+        service.addParticipant(project.id(), "Bureau B", ReviewerRole.ENGINEERING_OFFICE, "Technique",
+                "b@example.org", null, ACTOR);
+
+        assertThat(service.participants(project.id()))
+                .extracting(Participant::specialty)
+                .containsExactlyInAnyOrder("Structure", "Technique");
+    }
+
+    @Test
+    void otherRoleIsStoredAndReadBack() {
+        Project project = newProject();
+        Participant lab = service.addParticipant(project.id(), "Laboratoire", ReviewerRole.OTHER,
+                "Laboratoire", "labo@example.org", null, ACTOR);
+
+        assertThat(service.participants(project.id()))
+                .filteredOn(p -> p.id().equals(lab.id()))
+                .singleElement()
+                .satisfies(p -> {
+                    assertThat(p.role()).isEqualTo(ReviewerRole.OTHER);
+                    assertThat(p.specialty()).isEqualTo("Laboratoire");
+                });
+    }
+
+    @Test
+    void databaseRefusesAnUnknownRole() {
+        Project project = newProject();
+
+        assertThatThrownBy(() -> jdbc.sql("""
+                INSERT INTO participant (id, project_id, name, role, email)
+                VALUES (:id, :p, 'Inconnu', 'OWNER', 'x@example.org')
+                """)
+                .param("id", UUID.randomUUID())
+                .param("p", project.id().value())
+                .update())
+                .hasMessageContaining("check constraint");
     }
 }

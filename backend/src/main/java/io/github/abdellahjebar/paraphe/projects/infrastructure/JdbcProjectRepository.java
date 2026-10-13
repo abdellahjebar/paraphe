@@ -80,13 +80,14 @@ class JdbcProjectRepository implements ProjectRepository {
     @Override
     public void addParticipant(Participant participant) {
         jdbc.sql("""
-                INSERT INTO participant (id, project_id, name, role, email, phone, active)
-                VALUES (:id, :project, :name, :role, :email, :phone, :active)
+                INSERT INTO participant (id, project_id, name, role, specialty, email, phone, active)
+                VALUES (:id, :project, :name, :role, :specialty, :email, :phone, :active)
                 """)
                 .param("id", participant.id().value())
                 .param("project", participant.projectId().value())
                 .param("name", participant.name())
                 .param("role", participant.role().name())
+                .param("specialty", participant.specialty())
                 .param("email", participant.email())
                 .param("phone", participant.phone())
                 .param("active", participant.active())
@@ -96,7 +97,7 @@ class JdbcProjectRepository implements ProjectRepository {
     @Override
     public Optional<Participant> findParticipant(ProjectId projectId, ReviewerId id) {
         return jdbc.sql("""
-                SELECT id, project_id, name, role, email, phone, active
+                SELECT id, project_id, name, role, specialty, email, phone, active
                 FROM participant WHERE project_id = :p AND id = :id
                 """)
                 .param("p", projectId.value())
@@ -116,7 +117,7 @@ class JdbcProjectRepository implements ProjectRepository {
     @Override
     public List<Participant> participants(ProjectId projectId) {
         return jdbc.sql("""
-                SELECT id, project_id, name, role, email, phone, active
+                SELECT id, project_id, name, role, specialty, email, phone, active
                 FROM participant WHERE project_id = :p ORDER BY name, id
                 """)
                 .param("p", projectId.value())
@@ -212,6 +213,7 @@ class JdbcProjectRepository implements ProjectRepository {
                 new ProjectId(rs.getObject("project_id", UUID.class)),
                 rs.getString("name"),
                 ReviewerRole.valueOf(rs.getString("role")),
+                rs.getString("specialty"),
                 rs.getString("email"),
                 rs.getString("phone"),
                 rs.getBoolean("active"));

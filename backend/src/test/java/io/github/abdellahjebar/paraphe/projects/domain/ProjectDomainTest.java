@@ -45,7 +45,7 @@ class ProjectDomainTest {
     @Test
     void participantNeedsAtLeastOneContact() {
         assertThatThrownBy(() -> new Participant(ReviewerId.random(), ProjectId.random(), "LAK",
-                ReviewerRole.ARCHITECT, " ", null, true))
+                ReviewerRole.ARCHITECT, null, " ", null, true))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("email or a phone");
     }
@@ -53,10 +53,21 @@ class ProjectDomainTest {
     @Test
     void participantWithOnlyAPhoneIsAccepted() {
         Participant participant = new Participant(ReviewerId.random(), ProjectId.random(), "LAK",
-                ReviewerRole.ARCHITECT, null, "+212600000000", true);
+                ReviewerRole.ARCHITECT, null, null, "+212600000000", true);
 
         assertThat(participant.email()).isNull();
         assertThat(participant.phone()).isEqualTo("+212600000000");
+    }
+
+    @Test
+    void specialtyIsTrimmedAndBlankBecomesAbsent() {
+        Participant withSpecialty = new Participant(ReviewerId.random(), ProjectId.random(), "BET",
+                ReviewerRole.ENGINEERING_OFFICE, "  Structure ", "bet@example.org", null, true);
+        Participant withBlank = new Participant(ReviewerId.random(), ProjectId.random(), "BET",
+                ReviewerRole.ENGINEERING_OFFICE, "   ", "bet@example.org", null, true);
+
+        assertThat(withSpecialty.specialty()).isEqualTo("Structure");
+        assertThat(withBlank.specialty()).isNull();
     }
 
     @Test
