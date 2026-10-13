@@ -1,5 +1,8 @@
 HELP.md
 target/
+
+### Uploaded files and local runtime data: never committed ###
+data/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
