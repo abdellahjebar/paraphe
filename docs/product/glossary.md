@@ -17,7 +17,11 @@ before inventing a new name.
 | Effet d'un statut | `OpinionEffect` | `APPROVING`, `APPROVING_WITH_RESERVES`, `INFORMATIVE`, `BLOCKING` |
 | Statut global | `RevisionStatus` | Derived from opinions, never typed by hand |
 | Revue d'une révision | `RevisionReview` | Who must answer, what they answered, and the resulting status |
+| Participant | `Participant` | A person or firm taking part in a project, with a role and a contact |
 | Lien de relecture | `ReviewLink` | Personal secure link sent to one reviewer for one revision |
+| État d'un lien | `LinkStatus` | `ISSUED`, `OPENED`, `ANSWERED`, `EXPIRED`, `REVOKED` |
+| Fichier déposé | `StoredFile` | The uploaded PDF of a revision, kept behind the `FileStorage` port |
+| Saisi par | `enteredBy` | Opinion recorded by the contractor on behalf of a reviewer, flagged as such |
 | Journal d'événements | `AuditEvent` | Append-only record of every action |
 | Entreprise | `Contractor` | The company submitting the documents |
 

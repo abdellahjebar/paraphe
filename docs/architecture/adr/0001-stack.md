@@ -1,6 +1,7 @@
 # ADR 0001: Technology stack
 
-- Status: Accepted
+- Status: Accepted, amended in part by [ADR 0002](0002-persistence-boundaries-and-files.md)
+  (persistence is plain JDBC, boundaries are checked with ArchUnit)
 - Date: 2026-10-12
 
 ## Context
