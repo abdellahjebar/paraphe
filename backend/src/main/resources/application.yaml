@@ -2,10 +2,16 @@ spring:
   application:
     name: paraphe-backend
   datasource:
-    # Local defaults match compose.yaml. Production must set DATABASE_* explicitly.
+    # The application runs as a restricted role: it owns nothing and can only do what migration
+    # V10 grants it. Local defaults match compose.yaml; production sets these explicitly.
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5433/paraphe}
-    username: ${DATABASE_USER:paraphe}
-    password: ${DATABASE_PASSWORD:paraphe}
+    username: ${DATABASE_USER:paraphe_app}
+    password: ${DATABASE_PASSWORD:paraphe_app_dev}
+  flyway:
+    # Migrations run as the database owner, never as the application role.
+    url: ${MIGRATION_DATABASE_URL:${DATABASE_URL:jdbc:postgresql://localhost:5433/paraphe}}
+    user: ${MIGRATION_DATABASE_USER:paraphe}
+    password: ${MIGRATION_DATABASE_PASSWORD:paraphe}
   mvc:
     problemdetails:
       enabled: true

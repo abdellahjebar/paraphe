@@ -4,13 +4,17 @@ services:
     container_name: paraphe-postgres
     environment:
       POSTGRES_DB: paraphe
+      # "paraphe" owns the schema and runs the migrations. The application does NOT use it: it
+      # connects as the restricted role created by db/create-app-role.sql.
       POSTGRES_USER: paraphe
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-paraphe}
+      POSTGRES_PASSWORD: ${MIGRATION_DATABASE_PASSWORD:-paraphe}
     ports:
       # Bound to localhost only, on 5433 to avoid clashing with a local PostgreSQL.
       - "127.0.0.1:5433:5432"
     volumes:
       - paraphe-pgdata:/var/lib/postgresql/data
+      # Runs once, when the database is first created.
+      - ./db/create-app-role.sql:/docker-entrypoint-initdb.d/01-create-app-role.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U paraphe -d paraphe"]
       interval: 5s

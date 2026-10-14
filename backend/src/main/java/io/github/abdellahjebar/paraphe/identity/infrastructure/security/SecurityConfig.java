@@ -13,6 +13,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
@@ -39,6 +41,18 @@ class SecurityConfig {
 
     static final String ROLE_USER = "USER";
     static final String ROLE_PASSWORD_CHANGE_REQUIRED = "PASSWORD_CHANGE_REQUIRED";
+
+    /**
+     * Accounts live in the database and sign-in is handled by our own endpoint. Declaring this bean
+     * stops Spring Boot from creating its default user with a generated password, which it would
+     * otherwise print in the log at every start.
+     */
+    @Bean
+    UserDetailsService noContainerManagedUsers() {
+        return username -> {
+            throw new UsernameNotFoundException("Accounts are not managed by the container");
+        };
+    }
 
     @Bean
     SecurityContextRepository securityContextRepository() {
