@@ -33,7 +33,17 @@ What Paraphe protects, from whom, and which test proves each protection. Decisio
 | Session fixation | Session id replaced at sign-in | `signingInReplacesTheSessionIdentifier` |
 | Session cookie theft by script | `HttpOnly`, `Secure` in production, `SameSite=Lax` | `SessionCookieHttpTest` |
 | Cross-site request forgery | CSRF token (cookie + header) on all `/api/**` writes, including sign-in | `stateChangingCallWithoutACsrfTokenIsRefused` |
-| Using a project one is not in | Membership check; denial is "not found" | `aMemberSeesTheirProjectAndAnOutsiderSeesNothing` |
+| Using a project one is not in | Membership check; denial is "not found" | `aMemberSeesTheirProjectAndAnOutsiderSeesNothing`, `anOutsiderGetsNotFoundOnEveryProjectRoute`, `anOutsiderGetsNotFoundOnEveryDocumentAndReviewRoute` |
+| Guessing identifiers across projects (IDOR) | A document or revision is always checked against the project in the URL; mixed identifiers answer like a missing one | `aDocumentOfAnotherProjectIsNotFoundWhateverItsIdentifier`, `aRevisionOfAnotherProjectCannotBeDownloaded` |
+| Forgetting the guard on a new route | A test walks every registered route and fails the build | `ApiGuardCoverageTest` |
+| A reviewer learning about the others | The reviewer API returns only the document, the statuses and their own answer; no global status, no other reviewer, no project identifier | `ReviewerApiIntegrationTest.reviewerSeesTheDocumentAndTheStatusesTheyMayGiveAndNothingElse`, `reviewerAnswersAndIsToldOnlyThatItWasRecorded` |
+| Telling why a link failed | Unknown, expired and revoked links give byte-identical answers | `unusableLinksAllGiveTheSameAnswerWhateverTheReason` |
+| A reviewer answering for someone else | The identity comes from the token, never from the request body; unknown fields are rejected | `unknownFieldsInTheAnswerAreRejected`, `aReviewerCannotUseTheirLinkToAnswerForSomeoneElse` |
+| An answer passed off as the reviewer's own | On-behalf entries carry `enteredBy` and the typist as journal actor | `contractorCanEnterAnAnswerOnBehalfAndItIsMarkedAsSuch` |
+| Internal detail in an error | One handler; unexpected failures are a plain 500 with a correlation id | `ApiErrorHandlingTest` |
+| The contract exposing the surface to the public | `/v3/api-docs` is closed unless explicitly enabled; test-only routes are excluded | `theApiContractIsNotServedByDefault`, `OpenApiContractTest` |
+| A cookie set on a reviewer route | Reviewer routes are stateless | `reviewerRoutesNeverSetCookiesOrKeepASession` |
+| End to end regression | The whole cycle over real HTTP, cookies and CSRF | `FullReviewCycleTest` |
 | A fresh account used as is | Must change password before anything else | `anAccountThatMustChangeItsPasswordCanDoNothingElse...` |
 | Rewriting history | Database triggers refuse UPDATE, DELETE and TRUNCATE on journal, opinions, revisions and links | `JdbcAuditLogIntegrationTest`, `ReviewServiceIntegrationTest`, `DocumentServiceIntegrationTest`, `ReviewLinkServiceIntegrationTest` |
 | An opinion from someone not asked | Domain check **and** composite foreign key | `ReviewServiceIntegrationTest` |

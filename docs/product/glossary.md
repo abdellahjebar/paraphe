@@ -25,6 +25,10 @@ before inventing a new name.
 | Saisi par | `enteredBy` | Opinion recorded by the contractor on behalf of a reviewer, flagged as such |
 | Journal d'événements | `AuditEvent` | Append-only record of every action |
 | Entreprise | `Contractor` | The company submitting the documents |
+| Tableau de suivi | `DashboardView` | One row per document with its newest revision and one cell per expected reviewer |
+| Sans révision | `NO_REVISION` | Dashboard state: a document that has no revision yet |
+| Non envoyé | `NOT_SENT` | Dashboard state: a revision whose review was never opened |
+| Version remplacée | superseded | A revision that has a newer one; answers on it are kept and flagged |
 | Utilisateur | `AppUser` | A person with an account (the contractor side); reviewers never have one |
 | Membre de projet | `project_member` | A user allowed to see and change a project; anyone else gets "not found" |
 

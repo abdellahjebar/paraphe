@@ -65,6 +65,39 @@ Bodies never contain a stack trace, a SQL message, a password, a token, a hash, 
 - No pagination in the first version: a project has hundreds of documents, not millions. Add it with
   the first list that needs it, as a backwards-compatible query parameter.
 
+## Uploading a revision
+
+`POST /api/projects/{projectId}/documents/{documentId}/revisions`, `multipart/form-data`:
+
+| Part | Required | Meaning |
+|---|---|---|
+| `file` | yes | The PDF. Recognised by its content, not its name or declared type |
+| `label` | yes | The revision's index ("A", "REV1"), unique per document |
+| `externalLink` | no | A reference link, `http` or `https` only |
+| `reviewerIds` | no, repeatable | Who must answer. When absent, the document's work package defaults are used |
+
+The response (201) carries the revision and **one link per reviewer**. If anything fails the whole
+operation is undone: no revision, no review, no link, no file.
+
+## The reviewer side
+
+Three routes, no session, no CSRF: the token in the path is the credential.
+
+| Route | Returns |
+|---|---|
+| `GET /r/{token}` | The document title, the revision index, whether it is superseded, the statuses that may be given, and the reviewer's own last answer |
+| `GET /r/{token}/document` | The PDF |
+| `POST /r/{token}/opinion` | `{ "recorded": true, "revisionSuperseded": … }` |
+
+An unusable link is always the same `404`. The reviewer is never given the global status, other
+reviewers, or any project identifier.
+
+## The generated contract
+
+`docs/api/openapi.json` lists every route and payload. It is generated from the code and checked by
+`OpenApiContractTest`; a route change that is not reflected there fails the build. See
+[the local setup](../ops/local-setup.md) for how to accept a change.
+
 ## Secrets leave once
 
 A review link's token is returned **only** by the call that issues it. It cannot be read back later:
