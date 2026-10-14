@@ -9,7 +9,8 @@ One Spring Boot application (a modular monolith), one PostgreSQL database, one d
 ```
  Browser (to build)               Reviewer, no account
  cookie session + CSRF            personal link
-        │ /api/**                         │ /r/{token}/**
+        │ /api/**                         │ /relecture/{token} (page)
+        │ /, /projets/** (interface)      │ /r/{token}/** (review API)
         ▼                                 ▼
  ┌──────────────────────────────────────────────────────────────┐
  │  Security: three filter chains (contractor / reviewer / deny) │
