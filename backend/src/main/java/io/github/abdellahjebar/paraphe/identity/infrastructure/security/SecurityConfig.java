@@ -103,11 +103,18 @@ class SecurityConfig {
 
     @Bean
     @Order(3)
-    SecurityFilterChain defaultChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
-                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
-                        .anyRequest().denyAll())
+    SecurityFilterChain defaultChain(HttpSecurity http,
+                                     @Value("${springdoc.api-docs.enabled:false}") boolean apiDocsEnabled)
+            throws Exception {
+        http.authorizeHttpRequests(auth -> {
+                    auth.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll();
+                    auth.requestMatchers("/actuator/health", "/actuator/health/**").permitAll();
+                    if (apiDocsEnabled) {
+                        // Only ever on in tests and local tooling: the contract is not for the public.
+                        auth.requestMatchers("/v3/api-docs", "/v3/api-docs/**").permitAll();
+                    }
+                    auth.anyRequest().denyAll();
+                })
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers

@@ -16,6 +16,7 @@
     <properties>
         <java.version>25</java.version>
         <archunit.version>1.5.1</archunit.version>
+        <springdoc.version>3.1.1</springdoc.version>
     </properties>
     <dependencies>
         <dependency>
@@ -96,6 +97,11 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-postgresql</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
         <dependency>
             <groupId>com.tngtech.archunit</groupId>

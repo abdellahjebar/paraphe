@@ -57,3 +57,10 @@ logging:
 paraphe:
   # Where reviewers reach the application: prefix of the review links handed to the contractor.
   public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
+
+springdoc:
+  api-docs:
+    # The contract is generated from the code. It is only served when asked for (tests, local tooling).
+    enabled: ${OPENAPI_ENABLED:false}
+  swagger-ui:
+    enabled: false
