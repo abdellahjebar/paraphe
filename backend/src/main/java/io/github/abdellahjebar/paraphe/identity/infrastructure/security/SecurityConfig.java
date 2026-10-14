@@ -43,6 +43,20 @@ class SecurityConfig {
     static final String ROLE_PASSWORD_CHANGE_REQUIRED = "PASSWORD_CHANGE_REQUIRED";
 
     /**
+     * Policy for the pages the application serves itself. Scripts only from our own origin and no
+     * plugins, so an injected script has nowhere to load from; inline styles are tolerated because
+     * the interface library sets them; PDF.js needs a worker, possibly from a blob.
+     */
+    static final String PAGE_CSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+            + "img-src 'self' data: blob:; font-src 'self' data:; worker-src 'self' blob:; connect-src 'self'; "
+            + "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+
+    /** The built web interface: the entry page, its assets and the routes it handles itself. */
+    static final String[] APP_SHELL = {
+            "/", "/index.html", "/favicon.ico", "/assets/**", "/connexion", "/projets", "/projets/**"
+    };
+
+    /**
      * Accounts live in the database and sign-in is handled by our own endpoint. Declaring this bean
      * stops Spring Boot from creating its default user with a generated password, which it would
      * otherwise print in the log at every start.
@@ -68,7 +82,8 @@ class SecurityConfig {
     @Bean
     @Order(1)
     SecurityFilterChain reviewerChain(HttpSecurity http, RequestRateLimiter reviewerRateLimiter) throws Exception {
-        http.securityMatcher("/r/**")
+        // The review API and the page a reviewer's link opens: both are credentialed by the token.
+        http.securityMatcher("/r/**", "/relecture/**")
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .anyRequest().permitAll())
@@ -78,7 +93,7 @@ class SecurityConfig {
                 .headers(headers -> headers
                         .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.NO_REFERRER))
                         .frameOptions(frame -> frame.deny())
-                        .contentSecurityPolicy(csp -> csp.policyDirectives("frame-ancestors 'none'")))
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(PAGE_CSP)))
                 .addFilterBefore(new ReviewerRateLimitFilter(reviewerRateLimiter), HeaderWriterFilter.class);
         return http.build();
     }
@@ -123,6 +138,8 @@ class SecurityConfig {
         http.authorizeHttpRequests(auth -> {
                     auth.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll();
                     auth.requestMatchers("/actuator/health", "/actuator/health/**").permitAll();
+                    // Static files only: the interface itself holds no secret and calls the API.
+                    auth.requestMatchers(HttpMethod.GET, APP_SHELL).permitAll();
                     if (apiDocsEnabled) {
                         // Only ever on in tests and local tooling: the contract is not for the public.
                         auth.requestMatchers("/v3/api-docs", "/v3/api-docs/**").permitAll();
@@ -133,7 +150,8 @@ class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers
                         .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.NO_REFERRER))
-                        .frameOptions(frame -> frame.deny()));
+                        .frameOptions(frame -> frame.deny())
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(PAGE_CSP)));
         return http.build();
     }
 }

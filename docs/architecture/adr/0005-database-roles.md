@@ -27,7 +27,8 @@ re-enable it. The guarantee held against bugs, not against an attacker, which is
    |---|---|
    | `audit_event`, `opinion`, `revision` | `SELECT`, `INSERT` |
    | `review_link` | `SELECT`, `INSERT`, `UPDATE` of `first_opened_at` and `revoked_at` only |
-   | `review_request`, `project`, `work_package`, `document`, `project_member` | `SELECT`, `INSERT` |
+   | `project` | `SELECT`, `INSERT`, `UPDATE` of `chase_from_days` and `late_from_days` only (migration `V11`) |
+   | `review_request`, `work_package`, `document`, `project_member` | `SELECT`, `INSERT` |
    | `participant`, `opinion_status_definition` | `SELECT`, `INSERT`, `UPDATE` of `active` only |
    | `default_reviewer` | `SELECT`, `INSERT`, `DELETE` |
    | `app_user` | `SELECT`, `INSERT`, `UPDATE` of `password_hash`, `must_change_password`, `last_login_at`, `active` |

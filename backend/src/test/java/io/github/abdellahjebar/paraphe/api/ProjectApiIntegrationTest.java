@@ -79,6 +79,35 @@ class ProjectApiIntegrationTest extends ApiTestBase {
     }
 
     @Test
+    void waitingThresholdsHaveDefaultsAndCanBeChangedByMembersOnly() throws Exception {
+        MockHttpSession mine = signIn(newUser());
+        MockHttpSession other = signIn(newUser());
+        UUID project = createProject(mine, "Seuils " + UUID.randomUUID());
+
+        mvc.perform(get("/api/projects/{p}/dashboard", project).session(mine))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.thresholds.chaseFromDays").value(8))
+                .andExpect(jsonPath("$.thresholds.lateFromDays").value(15));
+
+        mvc.perform(put("/api/projects/{p}/thresholds", project).with(csrf()).session(mine)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"chaseFromDays\":5,\"lateFromDays\":10}"))
+                .andExpect(status().isOk());
+        mvc.perform(get("/api/projects/{p}/dashboard", project).session(mine))
+                .andExpect(jsonPath("$.thresholds.chaseFromDays").value(5))
+                .andExpect(jsonPath("$.thresholds.lateFromDays").value(10));
+
+        mvc.perform(put("/api/projects/{p}/thresholds", project).with(csrf()).session(mine)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"chaseFromDays\":10,\"lateFromDays\":10}"))
+                .andExpect(status().is4xxClientError());
+        mvc.perform(put("/api/projects/{p}/thresholds", project).with(csrf()).session(other)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"chaseFromDays\":5,\"lateFromDays\":10}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void newProjectComesWithTheDefaultStatuses() throws Exception {
         MockHttpSession session = signIn(newUser());
         UUID project = createProject(session, "Chantier");

@@ -50,6 +50,43 @@
         }
       }
     },
+    "/api/projects/{projectId}/thresholds" : {
+      "put" : {
+        "tags" : [ "project-controller" ],
+        "operationId" : "setThresholds",
+        "parameters" : [ {
+          "name" : "projectId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ThresholdsRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ThresholdsView"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/r/{token}/opinion" : {
       "post" : {
         "tags" : [ "reviewer-controller" ],
@@ -950,6 +987,36 @@
           }
         }
       },
+      "ThresholdsRequest" : {
+        "type" : "object",
+        "properties" : {
+          "chaseFromDays" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 365,
+            "minimum" : 1
+          },
+          "lateFromDays" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 365,
+            "minimum" : 2
+          }
+        }
+      },
+      "ThresholdsView" : {
+        "type" : "object",
+        "properties" : {
+          "chaseFromDays" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "lateFromDays" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
       "OpinionRequest" : {
         "type" : "object",
         "properties" : {
@@ -1438,6 +1505,9 @@
             "items" : {
               "$ref" : "#/components/schemas/StatusView"
             }
+          },
+          "thresholds" : {
+            "$ref" : "#/components/schemas/ThresholdsView"
           }
         }
       },
@@ -1581,6 +1651,9 @@
             "type" : "string",
             "format" : "date-time"
           },
+          "thresholds" : {
+            "$ref" : "#/components/schemas/Thresholds"
+          },
           "totals" : {
             "type" : "object",
             "additionalProperties" : {
@@ -1658,6 +1731,10 @@
             "type" : "integer",
             "format" : "int64"
           },
+          "attention" : {
+            "type" : "string",
+            "enum" : [ "NONE", "CHASE", "LATE" ]
+          },
           "linkStatus" : {
             "type" : "string",
             "enum" : [ "ISSUED", "OPENED", "ANSWERED", "EXPIRED", "REVOKED" ]
@@ -1695,6 +1772,19 @@
             "items" : {
               "$ref" : "#/components/schemas/ReviewerCell"
             }
+          }
+        }
+      },
+      "Thresholds" : {
+        "type" : "object",
+        "properties" : {
+          "chaseFromDays" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "lateFromDays" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         }
       }

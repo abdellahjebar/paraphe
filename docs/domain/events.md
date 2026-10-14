@@ -45,6 +45,7 @@ let anyone fill the journal).
 | `StatusDeactivated` | `code` |
 | `DefaultReviewersSet` | `workPackage`, `count` |
 | `MemberGranted` | `userId` |
+| `WaitingThresholdsSet` | `chaseFromDays`, `lateFromDays` |
 
 ## Document (target `DOCUMENT`)
 

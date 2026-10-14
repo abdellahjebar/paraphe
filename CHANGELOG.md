@@ -18,10 +18,14 @@ All notable changes. Format follows Keep a Changelog; versions are not tagged ye
   forced password change for new accounts, three separate security filter chains.
 - **HTTP API**: contractor routes under `/api`, reviewer routes under `/r/{token}`, dashboard,
   history, global error mapping, generated and committed OpenAPI contract.
-- **Tests**: 315, including architecture rules, an authorization matrix, a guard-coverage check,
+- **Waiting thresholds**: per project, when to chase and when a wait is late (defaults 8 and 15
+  days); the follow-up screen carries an attention level per reviewer cell.
+- **Web interface hosting**: the backend serves the built interface and its routes, with a strict
+  content security policy; a reviewer's link opens `/relecture/{token}`.
+- **Tests**: 323, including architecture rules, an authorization matrix, a guard-coverage check,
   attack tests against the database role and a full review cycle over real HTTP.
 - **Documentation**: glossary, domain model, event catalogue, architecture overview, API
-  conventions, security model, ADRs 0001 to 0005, local setup.
+  conventions, security model, ADRs 0001 to 0006, local setup.
 
 ### Security
 

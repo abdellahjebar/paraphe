@@ -9,6 +9,7 @@ never written by hand.
 |---|---|---|
 | `/api/**` | The contractor, in the web application | Cookie session + CSRF token |
 | `/r/{token}/**` | A reviewer | The token in the path, nothing else |
+| `/relecture/{token}` | A reviewer (page) | Serves the interface; the page then calls `/r/{token}/**` |
 
 Everything else is refused, apart from the health probe `/actuator/health`.
 

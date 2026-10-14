@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 class ProblemScrubbingAdvice implements ResponseBodyAdvice<Object> {
 
     private static final String REVIEWER_PREFIX = "/r/";
+    private static final String REVIEWER_PAGE_PREFIX = "/relecture/";
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -34,7 +35,8 @@ class ProblemScrubbingAdvice implements ResponseBodyAdvice<Object> {
             problem.setInstance(null);
             String path = request.getURI().getPath();
             // Always on review links; elsewhere only when the text would repeat the path.
-            if (path.startsWith(REVIEWER_PREFIX) || repeatsPath(problem.getDetail(), path)) {
+            if (path.startsWith(REVIEWER_PREFIX) || path.startsWith(REVIEWER_PAGE_PREFIX)
+                    || repeatsPath(problem.getDetail(), path)) {
                 problem.setDetail(null);
             }
         }

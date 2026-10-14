@@ -117,7 +117,7 @@ class ReviewLinkServiceIntegrationTest {
         IssuedLink issued = linkService.issue(revision, control, ACTOR);
 
         assertThat(issued.toString()).doesNotContain(issued.token().value());
-        assertThat(issued.path()).startsWith("/r/").endsWith(issued.token().value());
+        assertThat(issued.path()).startsWith("/relecture/").endsWith(issued.token().value());
     }
 
     @Test

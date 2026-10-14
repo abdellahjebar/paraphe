@@ -95,7 +95,7 @@ class RevisionApiIntegrationTest extends ApiTestBase {
         assertThat(body).contains(scenario.control.toString()).contains(scenario.structure.toString());
         assertThat(com.jayway.jsonpath.JsonPath.<List<String>>read(body, "$.links[*].url"))
                 .hasSize(2)
-                .allSatisfy(url -> assertThat(url).startsWith("http://localhost:8080/r/"));
+                .allSatisfy(url -> assertThat(url).startsWith("http://localhost:8080/relecture/"));
     }
 
     @Test
@@ -228,7 +228,7 @@ class RevisionApiIntegrationTest extends ApiTestBase {
         MvcResult fresh = mvc.perform(post("/api/projects/{p}/revisions/{r}/reviewers/{x}/link",
                         scenario.project, revision, scenario.control).with(csrf()).session(session))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.url").value(containsString("/r/")))
+                .andExpect(jsonPath("$.url").value(containsString("/relecture/")))
                 .andReturn();
         String newToken = read(fresh, "$.url");
 

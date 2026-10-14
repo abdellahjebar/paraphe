@@ -10,9 +10,12 @@ import java.time.Instant;
  */
 public record IssuedLink(ReviewLinkId id, ReviewToken token, Instant expiresAt) {
 
-    /** The path a reviewer opens. Built from the token, so treat the result as a secret. */
+    /**
+     * The page a reviewer opens in a browser. The page then calls the review API under
+     * {@code /r/{token}}. Built from the token, so treat the result as a secret.
+     */
     public String path() {
-        return "/r/" + token.value();
+        return "/relecture/" + token.value();
     }
 
     @Override

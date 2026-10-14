@@ -57,7 +57,8 @@ class DatabaseRolesIntegrationTest {
             "review_link", Set.of("first_opened_at", "revoked_at"),
             "participant", Set.of("active"),
             "opinion_status_definition", Set.of("active"),
-            "app_user", Set.of("password_hash", "must_change_password", "last_login_at", "active"));
+            "app_user", Set.of("password_hash", "must_change_password", "last_login_at", "active"),
+            "project", Set.of("chase_from_days", "late_from_days"));
 
     private static final List<String> EVIDENCE = List.of("audit_event", "opinion", "revision", "review_link");
 
