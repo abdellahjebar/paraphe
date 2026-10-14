@@ -18,16 +18,20 @@ All notable changes. Format follows Keep a Changelog; versions are not tagged ye
   forced password change for new accounts, three separate security filter chains.
 - **HTTP API**: contractor routes under `/api`, reviewer routes under `/r/{token}`, dashboard,
   history, global error mapping, generated and committed OpenAPI contract.
-- **Tests**: 296, including architecture rules, an authorization matrix, a guard-coverage check and a
-  full review cycle over real HTTP.
+- **Tests**: 315, including architecture rules, an authorization matrix, a guard-coverage check,
+  attack tests against the database role and a full review cycle over real HTTP.
 - **Documentation**: glossary, domain model, event catalogue, architecture overview, API
-  conventions, security model, ADRs 0001 to 0004, local setup.
+  conventions, security model, ADRs 0001 to 0005, local setup.
 
 ### Security
 
+- The application connects as a restricted database role that owns nothing; migrations run as the
+  owner. The role cannot update, delete or truncate the evidence tables, drop or disable a trigger,
+  alter the schema, create roles or switch triggers off for its session. Proven by attack tests.
+- The framework's default generated password is no longer printed at startup.
 - Error bodies never repeat the request path, which on a review link is the token.
 - A project or resource the caller may not use is indistinguishable from one that does not exist.
 
 ### Not yet
 
-- Restricted database role for the application, web interface, spreadsheet import, deployment.
+- Web interface, spreadsheet import, deployment, backups, pilot.

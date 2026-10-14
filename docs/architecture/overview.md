@@ -70,14 +70,18 @@ the rules exist in one place only.
 
 ## Data
 
-Nine migrations (`V1`..`V9`). Evidence tables (`audit_event`, `opinion`, `revision`, `review_link`)
-refuse modification at the database level. Foreign keys, including composite ones, carry
+Ten migrations (`V1`..`V10`). Evidence tables (`audit_event`, `opinion`, `revision`, `review_link`)
+refuse modification at the database level, twice: the application's role has no privilege to
+change them, and triggers refuse it even for the owner.
+
+Two database roles: the **owner** (`paraphe`) runs the migrations and owns the schema; the
+**application role** (`paraphe_app`) owns nothing and holds only the privileges migration `V10`
+grants, nothing more. See [ADR 0005](adr/0005-database-roles.md). Foreign keys, including composite ones, carry
 the cross-project invariants. See [domain-model.md](../domain/domain-model.md).
 
 ## What does not exist yet
 
 - The web interface.
-- A restricted database role for the application (today it owns the schema and could drop a trigger).
 - Deployment, backups, monitoring.
 - Notifications and reminders.
 - Import of the contractor's existing spreadsheet.

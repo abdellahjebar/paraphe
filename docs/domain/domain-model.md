@@ -86,7 +86,7 @@ reviewer used their own link.
 
 | Invariant | Mechanism |
 |---|---|
-| Journal, opinions, revisions and links are never modified or deleted | `forbid_change()` triggers |
+| Journal, opinions, revisions and links are never modified or deleted | `forbid_change()` triggers, **and** the application role holds no UPDATE, DELETE or TRUNCATE on them |
 | An opinion's reviewer was asked on that revision | composite foreign key |
 | A reviewer belongs to the project of the revision | trigger on `review_request` |
 | A document's work package belongs to its project | composite foreign key |

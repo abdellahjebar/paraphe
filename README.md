@@ -36,6 +36,8 @@ latest revision of a drawing.
 - **Configurable vocabulary.** Statuses and document types are defined per
   project, not hard-coded.
 - **Zero friction for reviewers.** A link is enough, no account needed.
+- **The application cannot rewrite history.** It connects with a database role
+  that owns nothing and holds no right to change or delete the evidence.
 - **Nothing leaks.** A project you cannot use looks exactly like one that does
   not exist; review tokens are stored hashed and never appear in a log or an
   error.

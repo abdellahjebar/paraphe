@@ -18,7 +18,7 @@ Goal: a contractor runs a project, sends revisions, gets answers and sees the st
 | Dashboard with filters, waiting days and link state | done |
 | Append-only journal and per-revision history | done |
 | Generated and committed API contract | done |
-| Restricted database role for the application | **to do** |
+| Restricted database role for the application | done |
 | Web interface (follow-up screen, send, reviewer page) | **to do** |
 | Import of the existing spreadsheet | **to do** |
 | Deployment, backups | **to do** |
