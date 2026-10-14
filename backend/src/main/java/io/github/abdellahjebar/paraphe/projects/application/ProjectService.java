@@ -8,6 +8,7 @@ import io.github.abdellahjebar.paraphe.projects.domain.Participant;
 import io.github.abdellahjebar.paraphe.projects.domain.Project;
 import io.github.abdellahjebar.paraphe.projects.domain.ProjectId;
 import io.github.abdellahjebar.paraphe.projects.domain.ReviewerRole;
+import io.github.abdellahjebar.paraphe.projects.domain.WaitingThresholds;
 import io.github.abdellahjebar.paraphe.projects.domain.WorkPackage;
 import io.github.abdellahjebar.paraphe.projects.port.ProjectRepository;
 import io.github.abdellahjebar.paraphe.reviews.domain.OpinionEffect;
@@ -119,6 +120,23 @@ public class ProjectService {
         projects.setDefaultReviewers(projectId, workPackageCode, reviewers);
         record("DefaultReviewersSet", actor, projectId,
                 JsonPayload.of("workPackage", workPackageCode, "count", String.valueOf(reviewers.size())));
+    }
+
+    /** Sets from how many days of waiting a reply is chased, and from how many it is late. */
+    public WaitingThresholds setWaitingThresholds(ProjectId projectId, int chaseFromDays, int lateFromDays,
+                                                  String actor) {
+        requireProject(projectId);
+        WaitingThresholds thresholds = new WaitingThresholds(chaseFromDays, lateFromDays);
+        projects.setThresholds(projectId, thresholds);
+        record("WaitingThresholdsSet", actor, projectId, JsonPayload.of(
+                "chaseFromDays", String.valueOf(chaseFromDays), "lateFromDays", String.valueOf(lateFromDays)));
+        return thresholds;
+    }
+
+    @Transactional(readOnly = true)
+    public WaitingThresholds thresholds(ProjectId projectId) {
+        requireProject(projectId);
+        return projects.thresholds(projectId);
     }
 
     @Transactional(readOnly = true)

@@ -7,11 +7,14 @@ import io.github.abdellahjebar.paraphe.projects.domain.Participant;
 import io.github.abdellahjebar.paraphe.projects.domain.Project;
 import io.github.abdellahjebar.paraphe.projects.domain.ProjectId;
 import io.github.abdellahjebar.paraphe.projects.domain.ReviewerRole;
+import io.github.abdellahjebar.paraphe.projects.domain.WaitingThresholds;
 import io.github.abdellahjebar.paraphe.projects.domain.WorkPackage;
 import io.github.abdellahjebar.paraphe.reviews.domain.OpinionEffect;
 import io.github.abdellahjebar.paraphe.reviews.domain.OpinionStatus;
 import io.github.abdellahjebar.paraphe.reviews.domain.ReviewerId;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -100,8 +103,19 @@ class ProjectController {
         }
     }
 
+    record ThresholdsView(int chaseFromDays, int lateFromDays) {
+        static ThresholdsView of(WaitingThresholds t) {
+            return new ThresholdsView(t.chaseFromDays(), t.lateFromDays());
+        }
+    }
+
+    record ThresholdsRequest(@Min(1) @Max(WaitingThresholds.MAX_DAYS) int chaseFromDays,
+                             @Min(2) @Max(WaitingThresholds.MAX_DAYS) int lateFromDays) {
+    }
+
     record ProjectOverview(UUID id, String name, Instant createdAt, List<WorkPackageView> workPackages,
-                           List<ParticipantView> participants, List<StatusView> statuses) {
+                           List<ParticipantView> participants, List<StatusView> statuses,
+                           ThresholdsView thresholds) {
     }
 
     // ---- projects ----------------------------------------------------------------------------
@@ -123,6 +137,16 @@ class ProjectController {
     @PreAuthorize(GUARD)
     ProjectOverview overview(@PathVariable UUID projectId) {
         return overviewOf(new ProjectId(projectId));
+    }
+
+    // ---- waiting thresholds ------------------------------------------------------------------
+
+    @PutMapping("/{projectId}/thresholds")
+    @PreAuthorize(GUARD)
+    ThresholdsView setThresholds(@PathVariable UUID projectId, @Valid @RequestBody ThresholdsRequest body,
+                                 @AuthenticationPrincipal AuthenticatedUser user) {
+        return ThresholdsView.of(projects.setWaitingThresholds(new ProjectId(projectId), body.chaseFromDays(),
+                body.lateFromDays(), actor(user)));
     }
 
     // ---- work packages -----------------------------------------------------------------------
@@ -199,7 +223,7 @@ class ProjectController {
         List<ParticipantView> participants = projects.participants(id).stream().map(ParticipantView::of).toList();
         List<StatusView> statuses = projects.statuses(id).stream().map(StatusView::of).toList();
         return new ProjectOverview(project.id().value(), project.name(), project.createdAt(), workPackages,
-                participants, statuses);
+                participants, statuses, ThresholdsView.of(projects.thresholds(id)));
     }
 
     private WorkPackageView workPackageView(ProjectId id, WorkPackage workPackage) {

@@ -3,6 +3,7 @@ package io.github.abdellahjebar.paraphe.projects.port;
 import io.github.abdellahjebar.paraphe.projects.domain.Participant;
 import io.github.abdellahjebar.paraphe.projects.domain.Project;
 import io.github.abdellahjebar.paraphe.projects.domain.ProjectId;
+import io.github.abdellahjebar.paraphe.projects.domain.WaitingThresholds;
 import io.github.abdellahjebar.paraphe.projects.domain.WorkPackage;
 import io.github.abdellahjebar.paraphe.reviews.domain.OpinionStatus;
 import io.github.abdellahjebar.paraphe.reviews.domain.ReviewerId;
@@ -17,6 +18,10 @@ public interface ProjectRepository {
     void create(Project project, List<OpinionStatus> statuses);
 
     Optional<Project> find(ProjectId id);
+
+    WaitingThresholds thresholds(ProjectId projectId);
+
+    void setThresholds(ProjectId projectId, WaitingThresholds thresholds);
 
     /** Gives a user access to a project. Granting twice is harmless. */
     void addMember(ProjectId projectId, UUID userId);

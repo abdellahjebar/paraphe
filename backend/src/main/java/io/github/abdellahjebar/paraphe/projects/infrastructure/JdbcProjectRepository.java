@@ -4,6 +4,7 @@ import io.github.abdellahjebar.paraphe.projects.domain.Participant;
 import io.github.abdellahjebar.paraphe.projects.domain.Project;
 import io.github.abdellahjebar.paraphe.projects.domain.ProjectId;
 import io.github.abdellahjebar.paraphe.projects.domain.ReviewerRole;
+import io.github.abdellahjebar.paraphe.projects.domain.WaitingThresholds;
 import io.github.abdellahjebar.paraphe.projects.domain.WorkPackage;
 import io.github.abdellahjebar.paraphe.projects.port.ProjectRepository;
 import io.github.abdellahjebar.paraphe.reviews.domain.OpinionEffect;
@@ -49,6 +50,24 @@ class JdbcProjectRepository implements ProjectRepository {
                         rs.getString("name"),
                         rs.getObject("created_at", OffsetDateTime.class).toInstant()))
                 .optional();
+    }
+
+    @Override
+    public WaitingThresholds thresholds(ProjectId projectId) {
+        return jdbc.sql("SELECT chase_from_days, late_from_days FROM project WHERE id = :p")
+                .param("p", projectId.value())
+                .query((rs, n) -> new WaitingThresholds(rs.getInt("chase_from_days"), rs.getInt("late_from_days")))
+                .optional()
+                .orElse(WaitingThresholds.DEFAULT);
+    }
+
+    @Override
+    public void setThresholds(ProjectId projectId, WaitingThresholds thresholds) {
+        jdbc.sql("UPDATE project SET chase_from_days = :chase, late_from_days = :late WHERE id = :p")
+                .param("chase", thresholds.chaseFromDays())
+                .param("late", thresholds.lateFromDays())
+                .param("p", projectId.value())
+                .update();
     }
 
     @Override

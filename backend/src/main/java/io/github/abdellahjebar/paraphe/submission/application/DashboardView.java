@@ -1,5 +1,6 @@
 package io.github.abdellahjebar.paraphe.submission.application;
 
+import io.github.abdellahjebar.paraphe.projects.domain.Attention;
 import io.github.abdellahjebar.paraphe.projects.domain.ReviewerRole;
 import io.github.abdellahjebar.paraphe.reviews.domain.LinkStatus;
 import io.github.abdellahjebar.paraphe.reviews.domain.OpinionEffect;
@@ -9,7 +10,12 @@ import java.util.Map;
 import java.util.UUID;
 
 /** The follow-up screen: one row per document, one cell per expected reviewer. */
-public record DashboardView(UUID projectId, Instant generatedAt, Map<String, Integer> totals, List<Row> documents) {
+public record DashboardView(UUID projectId, Instant generatedAt, Thresholds thresholds,
+                            Map<String, Integer> totals, List<Row> documents) {
+
+    /** The project's waiting thresholds, so the screen never hard-codes them. */
+    public record Thresholds(int chaseFromDays, int lateFromDays) {
+    }
 
     /** Dashboard-level states that are not revision statuses. */
     public static final String NO_REVISION = "NO_REVISION";
@@ -30,9 +36,12 @@ public record DashboardView(UUID projectId, Instant generatedAt, Map<String, Int
     /**
      * @param waitingDays whole days since the revision was sent, only for a reviewer who has not
      *     answered
+     * @param attention how much that waiting deserves attention, from the project's thresholds;
+     *     always {@code NONE} for a reviewer who has answered
      */
     public record ReviewerCell(UUID reviewerId, String name, ReviewerRole role, String specialty, CellState state,
                                String statusCode, String statusLabel, OpinionEffect effect, Instant answeredAt,
-                               boolean enteredOnBehalf, Long waitingDays, LinkStatus linkStatus) {
+                               boolean enteredOnBehalf, Long waitingDays, Attention attention,
+                               LinkStatus linkStatus) {
     }
 }
