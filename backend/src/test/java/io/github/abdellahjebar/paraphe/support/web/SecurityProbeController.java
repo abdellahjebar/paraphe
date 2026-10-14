@@ -30,11 +30,6 @@ public class SecurityProbeController {
         return "member";
     }
 
-    @GetMapping("/r/{token}")
-    String reviewer(@PathVariable String token) {
-        return "reviewer";
-    }
-
     @GetMapping("/other")
     String other() {
         return "other";

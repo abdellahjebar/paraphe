@@ -101,8 +101,9 @@ class SecurityIntegrationTest {
 
     @Test
     void reviewerPathsNeedNoSession() throws Exception {
+        // Reached without any session: an unknown token is "not found", not "please sign in".
         mvc.perform(get("/r/" + ReviewToken.generate().value()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -274,7 +275,7 @@ class SecurityIntegrationTest {
     @Test
     void reviewerResponsesAreNeverCachedAndNeverLeakTheLinkThroughReferer() throws Exception {
         mvc.perform(get("/r/" + ReviewToken.generate().value()))
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(header().string("Referrer-Policy", "no-referrer"))
                 .andExpect(header().string("Cache-Control", org.hamcrest.Matchers.containsString("no-store")))
                 .andExpect(header().string("X-Frame-Options", "DENY"))
@@ -286,7 +287,7 @@ class SecurityIntegrationTest {
     void reviewerPathsAreRateLimitedPerAddress() throws Exception {
         String path = "/r/" + ReviewToken.generate().value();
         for (int i = 0; i < 60; i++) {
-            mvc.perform(get(path)).andExpect(status().isOk());
+            mvc.perform(get(path)).andExpect(status().isNotFound());
         }
 
         mvc.perform(get(path))
