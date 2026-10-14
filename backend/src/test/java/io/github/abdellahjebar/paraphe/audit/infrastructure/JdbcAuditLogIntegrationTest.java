@@ -1,5 +1,6 @@
 package io.github.abdellahjebar.paraphe.audit.infrastructure;
 
+import io.github.abdellahjebar.paraphe.support.OwnerJdbc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -23,6 +24,9 @@ class JdbcAuditLogIntegrationTest {
 
     @Autowired
     private JdbcClient jdbc;
+
+    @Autowired
+    private OwnerJdbc owner;
 
     private AuditEvent appendOne(UUID targetId, String type, Instant at) {
         AuditEvent event = AuditEvent.of(type, "reviewer:control-office", "REVISION", targetId,
@@ -64,7 +68,7 @@ class JdbcAuditLogIntegrationTest {
         UUID target = UUID.randomUUID();
         AuditEvent event = appendOne(target, "OpinionGiven", Instant.parse("2026-10-12T10:00:00Z"));
 
-        assertThatThrownBy(() -> jdbc.sql("UPDATE audit_event SET actor = 'someone-else' WHERE id = :id")
+        assertThatThrownBy(() -> owner.client().sql("UPDATE audit_event SET actor = 'someone-else' WHERE id = :id")
                 .param("id", event.id())
                 .update())
                 .hasMessageContaining("append-only");
@@ -78,7 +82,7 @@ class JdbcAuditLogIntegrationTest {
         UUID target = UUID.randomUUID();
         AuditEvent event = appendOne(target, "OpinionGiven", Instant.parse("2026-10-12T10:00:00Z"));
 
-        assertThatThrownBy(() -> jdbc.sql("DELETE FROM audit_event WHERE id = :id")
+        assertThatThrownBy(() -> owner.client().sql("DELETE FROM audit_event WHERE id = :id")
                 .param("id", event.id())
                 .update())
                 .hasMessageContaining("append-only");
@@ -90,7 +94,7 @@ class JdbcAuditLogIntegrationTest {
     void databaseRefusesToTruncateTheJournal() {
         appendOne(UUID.randomUUID(), "OpinionGiven", Instant.parse("2026-10-12T10:00:00Z"));
 
-        assertThatThrownBy(() -> jdbc.sql("TRUNCATE TABLE audit_event").update())
+        assertThatThrownBy(() -> owner.client().sql("TRUNCATE TABLE audit_event").update())
                 .hasMessageContaining("append-only");
     }
 

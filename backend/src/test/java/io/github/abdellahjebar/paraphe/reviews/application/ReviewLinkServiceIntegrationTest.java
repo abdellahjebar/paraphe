@@ -1,5 +1,6 @@
 package io.github.abdellahjebar.paraphe.reviews.application;
 
+import io.github.abdellahjebar.paraphe.support.OwnerJdbc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -50,6 +51,9 @@ class ReviewLinkServiceIntegrationTest {
 
     @Autowired
     private JdbcClient jdbc;
+
+    @Autowired
+    private OwnerJdbc owner;
 
     @Autowired
     private MutableClock clock;
@@ -254,13 +258,13 @@ class ReviewLinkServiceIntegrationTest {
     void databaseRefusesToDeleteOrRewriteALink() {
         IssuedLink issued = linkService.issue(revision, control, ACTOR);
 
-        assertThatThrownBy(() -> jdbc.sql("DELETE FROM review_link WHERE id = :id")
+        assertThatThrownBy(() -> owner.client().sql("DELETE FROM review_link WHERE id = :id")
                 .param("id", issued.id().value()).update())
                 .hasMessageContaining("append-only");
-        assertThatThrownBy(() -> jdbc.sql("UPDATE review_link SET token_hash = :h WHERE id = :id")
+        assertThatThrownBy(() -> owner.client().sql("UPDATE review_link SET token_hash = :h WHERE id = :id")
                 .param("h", "b".repeat(64)).param("id", issued.id().value()).update())
                 .hasMessageContaining("immutable");
-        assertThatThrownBy(() -> jdbc.sql("UPDATE review_link SET expires_at = expires_at + interval '1 year' WHERE id = :id")
+        assertThatThrownBy(() -> owner.client().sql("UPDATE review_link SET expires_at = expires_at + interval '1 year' WHERE id = :id")
                 .param("id", issued.id().value()).update())
                 .hasMessageContaining("immutable");
     }

@@ -1,5 +1,6 @@
 package io.github.abdellahjebar.paraphe.reviews.application;
 
+import io.github.abdellahjebar.paraphe.support.OwnerJdbc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -45,6 +46,9 @@ class ReviewServiceIntegrationTest {
 
     @Autowired
     private JdbcClient jdbc;
+
+    @Autowired
+    private OwnerJdbc owner;
 
     @Autowired
     private TestFixtures fixtures;
@@ -212,10 +216,10 @@ class ReviewServiceIntegrationTest {
         RevisionId revision = openReview(controlOffice);
         service.recordOpinion(revision, controlOffice, VSO, "");
 
-        assertThatThrownBy(() -> jdbc.sql("UPDATE opinion SET effect = 'BLOCKING' WHERE revision_id = :id")
+        assertThatThrownBy(() -> owner.client().sql("UPDATE opinion SET effect = 'BLOCKING' WHERE revision_id = :id")
                 .param("id", revision.value()).update())
                 .hasMessageContaining("append-only");
-        assertThatThrownBy(() -> jdbc.sql("DELETE FROM opinion WHERE revision_id = :id")
+        assertThatThrownBy(() -> owner.client().sql("DELETE FROM opinion WHERE revision_id = :id")
                 .param("id", revision.value()).update())
                 .hasMessageContaining("append-only");
 

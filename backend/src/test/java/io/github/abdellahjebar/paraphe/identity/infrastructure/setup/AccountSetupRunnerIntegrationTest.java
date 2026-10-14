@@ -63,6 +63,11 @@ class AccountSetupRunnerIntegrationTest {
     }
 
     @Test
+    void noDefaultPasswordIsPrintedAtStartup(CapturedOutput output) {
+        assertThat(output.getAll()).doesNotContain("generated security password");
+    }
+
+    @Test
     void accountsCreatedAtStartupStartWithoutAnyProject() {
         AuthenticationResult result = authentication.authenticate("khawla@example.org",
                 "temporary passphrase 123", "10.9.0.3");

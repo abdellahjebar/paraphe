@@ -1,5 +1,6 @@
 package io.github.abdellahjebar.paraphe.documents.application;
 
+import io.github.abdellahjebar.paraphe.support.OwnerJdbc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -47,6 +48,9 @@ class DocumentServiceIntegrationTest {
 
     @Autowired
     private JdbcClient jdbc;
+
+    @Autowired
+    private OwnerJdbc owner;
 
     private Revision submit(Document document, String label, byte[] content, String fileName, String link) {
         return service.submitRevision(document.id(), label, new ByteArrayInputStream(content), fileName, link, ACTOR);
@@ -214,10 +218,10 @@ class DocumentServiceIntegrationTest {
         Document document = fixtures.document(fixtures.project().id());
         Revision revision = submit(document, "A", TestFixtures.PDF, "plan.pdf", null);
 
-        assertThatThrownBy(() -> jdbc.sql("UPDATE revision SET label = 'Z' WHERE id = :id")
+        assertThatThrownBy(() -> owner.client().sql("UPDATE revision SET label = 'Z' WHERE id = :id")
                 .param("id", revision.id().value()).update())
                 .hasMessageContaining("append-only");
-        assertThatThrownBy(() -> jdbc.sql("DELETE FROM revision WHERE id = :id")
+        assertThatThrownBy(() -> owner.client().sql("DELETE FROM revision WHERE id = :id")
                 .param("id", revision.id().value()).update())
                 .hasMessageContaining("append-only");
 
