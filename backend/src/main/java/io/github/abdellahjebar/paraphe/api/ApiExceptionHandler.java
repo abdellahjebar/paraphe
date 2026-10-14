@@ -17,6 +17,7 @@ import io.github.abdellahjebar.paraphe.reviews.application.ReviewAlreadyOpenExce
 import io.github.abdellahjebar.paraphe.reviews.application.ReviewLinkNotFoundException;
 import io.github.abdellahjebar.paraphe.reviews.application.ReviewNotFoundException;
 import io.github.abdellahjebar.paraphe.reviews.domain.UnexpectedReviewerException;
+import io.github.abdellahjebar.paraphe.submission.application.LinkRefusedException;
 import io.github.abdellahjebar.paraphe.submission.application.NoReviewersException;
 import io.github.abdellahjebar.paraphe.submission.application.UnknownStatusException;
 import java.util.UUID;
@@ -55,6 +56,7 @@ class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             ReviewNotFoundException.class,
             ReviewLinkNotFoundException.class,
             UserNotFoundException.class,
+            LinkRefusedException.class,
             AccessDeniedException.class
     })
     ResponseEntity<ProblemDetail> notFound() {

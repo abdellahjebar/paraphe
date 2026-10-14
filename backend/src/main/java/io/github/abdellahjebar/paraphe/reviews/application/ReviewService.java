@@ -86,6 +86,12 @@ public class ReviewService {
         return review.status();
     }
 
+    /** The whole review of a revision: who is expected, what they answered, the derived status. */
+    @Transactional(readOnly = true)
+    public RevisionReview review(RevisionId revisionId) {
+        return load(revisionId);
+    }
+
     /** Every opinion given on a revision, oldest first. */
     @Transactional(readOnly = true)
     public java.util.List<Opinion> history(RevisionId revisionId) {

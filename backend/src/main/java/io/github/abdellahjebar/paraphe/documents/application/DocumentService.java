@@ -116,6 +116,38 @@ public class DocumentService {
     }
 
     @Transactional(readOnly = true)
+    public List<Document> documentsOf(ProjectId projectId) {
+        return documents.documentsOf(projectId);
+    }
+
+    /**
+     * The document, but only when it belongs to the project. A document of another project is
+     * reported as missing, so an identifier from elsewhere reveals nothing.
+     */
+    @Transactional(readOnly = true)
+    public Document documentInProject(ProjectId projectId, DocumentId documentId) {
+        Document document = documents.findDocument(documentId)
+                .orElseThrow(() -> new DocumentNotFoundException(documentId));
+        if (!document.projectId().equals(projectId)) {
+            throw new DocumentNotFoundException(documentId);
+        }
+        return document;
+    }
+
+    /** The revision, but only when its document belongs to the project. */
+    @Transactional(readOnly = true)
+    public Revision revisionInProject(ProjectId projectId, RevisionId revisionId) {
+        Revision revision = documents.findRevision(revisionId)
+                .orElseThrow(() -> new RevisionNotFoundException(revisionId));
+        Document document = documents.findDocument(revision.documentId())
+                .orElseThrow(() -> new RevisionNotFoundException(revisionId));
+        if (!document.projectId().equals(projectId)) {
+            throw new RevisionNotFoundException(revisionId);
+        }
+        return revision;
+    }
+
+    @Transactional(readOnly = true)
     public List<Revision> revisions(DocumentId documentId) {
         documents.findDocument(documentId).orElseThrow(() -> new DocumentNotFoundException(documentId));
         return documents.revisions(documentId);

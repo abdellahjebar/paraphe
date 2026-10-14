@@ -9,6 +9,11 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  servlet:
+    multipart:
+      # A little above paraphe.storage.max-file-size-bytes (25 MB), which is the real limit.
+      max-file-size: 26MB
+      max-request-size: 27MB
   jackson:
     deserialization:
       # A typo in a field name must fail loudly instead of being silently ignored.
@@ -48,3 +53,7 @@ logging:
     org.springframework.web: INFO
     org.apache.catalina: INFO
     org.apache.coyote: INFO
+
+paraphe:
+  # Where reviewers reach the application: prefix of the review links handed to the contractor.
+  public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}

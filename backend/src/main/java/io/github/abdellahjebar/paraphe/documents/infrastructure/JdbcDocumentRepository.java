@@ -64,6 +64,23 @@ class JdbcDocumentRepository implements DocumentRepository {
     }
 
     @Override
+    public List<Document> documentsOf(ProjectId projectId) {
+        return jdbc.sql("""
+                SELECT id, project_id, work_package_code, title, document_type, created_at
+                FROM document WHERE project_id = :p ORDER BY created_at, id
+                """)
+                .param("p", projectId.value())
+                .query((rs, n) -> new Document(
+                        new DocumentId(rs.getObject("id", UUID.class)),
+                        new ProjectId(rs.getObject("project_id", UUID.class)),
+                        rs.getString("work_package_code"),
+                        rs.getString("title"),
+                        rs.getString("document_type"),
+                        rs.getObject("created_at", OffsetDateTime.class).toInstant()))
+                .list();
+    }
+
+    @Override
     public void insertRevision(Revision revision) {
         jdbc.sql("""
                 INSERT INTO revision (id, document_id, sequence, label, submitted_at,
