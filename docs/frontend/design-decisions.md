@@ -103,6 +103,32 @@ its evidence is and what would change it.
 | The 64-character maximum can be reached by 72 bytes first with accented characters, so a permitted length may be refused. | NIST: allow at least 64 characters | Pre-hash before bcrypt, or move to a memory-hard hash |
 | Validation messages are English text. | Decision 47 | Add stable error codes to the API contract |
 
+## Interaction and accessibility
+
+| # | Decision | Evidence |
+|---|---|---|
+| 48 | Confirmations and results use `role="status"`; errors use `role="alert"`; a busy state is announced. | Standard (WCAG 4.1.3) |
+| 49 | Modal dialogs: focus moves inside on open and returns to the opener on close; Tab stays inside; Escape closes; for an irreversible action the least destructive button is focused first. | Standard (WAI-ARIA Authoring Practices) |
+| 50 | The reviewer's answer choices are a real radio group: one tab stop, arrow keys change the choice. | Standard (WAI-ARIA Authoring Practices) |
+| 51 | The file drop zone always offers a plain "choose a file" button; nothing requires dragging. | Standard (WCAG 2.5.7) |
+| 52 | The contractor session warns before it expires, gives at least 20 seconds to extend it, and keeps what was typed. | Standard (WCAG 2.2.1) |
+| 53 | A multi-step action never asks again for something already given. | Standard (WCAG 3.3.7) |
+| 54 | Plans are usually untagged PDFs, so they cannot be made accessible from our side; the comment field and a download link are always offered. | Standard (tagged-PDF support in PDF.js), judgement |
+| 55 | "Opened" is a weak signal: a mail scanner that runs scripts can set it. It is shown as "link opened", never as proof that a person read the plan. | Judgement, see backend gaps |
+
+## Backend gaps found while checking interaction
+
+| Gap | Why it matters | Planned action |
+|---|---|---|
+| The server marks a link as opened on the first `GET /r/{token}`. | Mail-security scanners that run scripts can trigger it; the page shell itself has no effect, but the API call behind it does. | Mark it on the first real action (a scroll, a click, the plan being fetched), or keep it but label it as weak (decision 55) |
+| No session time-out is configured, so the framework default of 30 minutes applies silently. | WCAG 2.2.1 needs a warning and a way to extend. | Set an explicit time-out and an endpoint to extend the session |
+
+## Name
+
+No product called "Paraphe" for site approval tracking turned up in a web search. Related products exist
+(electronic "parapheur" tools for administrations, and site document tools that handle approvals), so the
+word is close to a generic term. A trademark search (INPI, OMPIC) is still to do before publication.
+
 ## Rejected
 
 | Rejected | Reason |
