@@ -18,6 +18,12 @@ All notable changes. Format follows Keep a Changelog; versions are not tagged ye
   forced password change for new accounts, three separate security filter chains.
 - **HTTP API**: contractor routes under `/api`, reviewer routes under `/r/{token}`, dashboard,
   history, global error mapping, generated and committed OpenAPI contract.
+- **Error codes**: every error carries a stable `code`; validation errors list `errors` by field.
+- **Passwords**: Argon2id, 15 characters minimum, refusal list, account and service names refused; older
+  bcrypt hashes are replaced at sign-in.
+- **Opened links**: `POST /r/{token}/seen` records the opening after a real gesture; loading the page
+  records nothing.
+- **Sessions**: explicit 60 minute idle time-out, reported to the interface so it can warn.
 - **Waiting thresholds**: per project, when to chase and when a wait is late (defaults 8 and 15
   days); the follow-up screen carries an attention level per reviewer cell.
 - **Web interface hosting**: the backend serves the built interface and its routes, with a strict

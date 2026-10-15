@@ -27,9 +27,9 @@ What Paraphe protects, from whom, and which test proves each protection. Decisio
 | A token leaking through error pages | Request path removed from every error body | `SecurityIntegrationTest.errorBodiesNeverEchoTheLinkToken` |
 | A token leaking through `Referer` | `Referrer-Policy: no-referrer` | `SecurityIntegrationTest.reviewerResponsesAreNeverCached...` |
 | A cached review page | `Cache-Control: no-store` on review paths | same test |
-| Guessing a password | bcrypt cost 12, 5 failures lock account and address for 15 minutes | `IdentityServiceIntegrationTest`, `SecurityIntegrationTest` |
+| Guessing a password | Argon2id, 15 characters minimum, common passwords refused, 5 failures lock account and address for 15 minutes | `IdentityServiceIntegrationTest`, `SecurityIntegrationTest` |
 | Finding which emails have accounts | Same response and same time for unknown account and wrong password; lock behaves the same | `wrongPasswordAndUnknownAccountAreIndistinguishable`, `anUnknownAccountLocksLikeARealOne...` |
-| Stolen database | Passwords only as bcrypt hashes; tokens only as SHA-256 | `createdAccountStoresOnlyAHashOfThePassword` |
+| Stolen database | Passwords only as Argon2id hashes (old bcrypt hashes upgraded at sign-in); tokens only as SHA-256 | `createdAccountStoresOnlyAHashOfThePassword` |
 | Session fixation | Session id replaced at sign-in | `signingInReplacesTheSessionIdentifier` |
 | Session cookie theft by script | `HttpOnly`, `Secure` in production, `SameSite=Lax` | `SessionCookieHttpTest` |
 | Cross-site request forgery | CSRF token (cookie + header) on all `/api/**` writes, including sign-in | `stateChangingCallWithoutACsrfTokenIsRefused` |
@@ -37,6 +37,7 @@ What Paraphe protects, from whom, and which test proves each protection. Decisio
 | Guessing identifiers across projects (IDOR) | A document or revision is always checked against the project in the URL; mixed identifiers answer like a missing one | `aDocumentOfAnotherProjectIsNotFoundWhateverItsIdentifier`, `aRevisionOfAnotherProjectCannotBeDownloaded` |
 | Forgetting the guard on a new route | A test walks every registered route and fails the build | `ApiGuardCoverageTest` |
 | A reviewer learning about the others | The reviewer API returns only the document, the statuses and their own answer; no global status, no other reviewer, no project identifier | `ReviewerApiIntegrationTest.reviewerSeesTheDocumentAndTheStatusesTheyMayGiveAndNothingElse`, `reviewerAnswersAndIsToldOnlyThatItWasRecorded` |
+| A mail scanner marking a link as read | Loading the page or the API view changes nothing; only `POST /r/{token}/seen`, called after a real gesture, records the opening | `SubmissionServiceIntegrationTest.openingTheLinkShowsTheReviewerWhatTheyNeedAndNothingMore` |
 | Telling why a link failed | Unknown, expired and revoked links give byte-identical answers | `unusableLinksAllGiveTheSameAnswerWhateverTheReason` |
 | A reviewer answering for someone else | The identity comes from the token, never from the request body; unknown fields are rejected | `unknownFieldsInTheAnswerAreRejected`, `aReviewerCannotUseTheirLinkToAnswerForSomeoneElse` |
 | An answer passed off as the reviewer's own | On-behalf entries carry `enteredBy` and the typist as journal actor | `contractorCanEnterAnAnswerOnBehalfAndItIsMarkedAsSuch` |

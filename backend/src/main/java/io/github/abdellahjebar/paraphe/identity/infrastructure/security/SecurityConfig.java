@@ -124,9 +124,11 @@ class SecurityConfig {
                         .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31_536_000)))
                 .exceptionHandling(errors -> errors
                         .authenticationEntryPoint((request, response, exception) ->
-                                ProblemResponses.write(response, 401, "Unauthorized"))
+                                ProblemResponses.write(response, 401, "Unauthorized",
+                                        io.github.abdellahjebar.paraphe.shared.web.ErrorCode.AUTHENTICATION_REQUIRED))
                         .accessDeniedHandler((request, response, exception) ->
-                                ProblemResponses.write(response, 403, "Forbidden")));
+                                ProblemResponses.write(response, 403, "Forbidden",
+                                        io.github.abdellahjebar.paraphe.shared.web.ErrorCode.FORBIDDEN)));
         return http.build();
     }
 

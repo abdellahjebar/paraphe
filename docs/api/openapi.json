@@ -87,6 +87,25 @@
         }
       }
     },
+    "/r/{token}/seen" : {
+      "post" : {
+        "tags" : [ "reviewer-controller" ],
+        "operationId" : "seen",
+        "parameters" : [ {
+          "name" : "token",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        }
+      }
+    },
     "/r/{token}/opinion" : {
       "post" : {
         "tags" : [ "reviewer-controller" ],
@@ -954,6 +973,56 @@
   },
   "components" : {
     "schemas" : {
+      "Problem" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "detail" : {
+            "type" : "string"
+          },
+          "code" : {
+            "type" : "string",
+            "description" : "Stable machine-readable code; the only field a client should branch on.",
+            "enum" : [ "AUTHENTICATION_REQUIRED", "FORBIDDEN", "NOT_FOUND", "TOO_MANY_REQUESTS", "TOO_MANY_ATTEMPTS", "INVALID_CREDENTIALS", "INVALID_CURRENT_PASSWORD", "WEAK_PASSWORD", "VALIDATION_FAILED", "MALFORMED_REQUEST", "INVALID_REQUEST", "METHOD_NOT_ALLOWED", "NOT_ACCEPTABLE", "UNSUPPORTED_MEDIA_TYPE", "NOT_A_PDF", "FILE_TOO_LARGE", "DUPLICATE_CODE", "DUPLICATE_REVISION_LABEL", "REVIEW_ALREADY_OPEN", "EMAIL_ALREADY_USED", "NO_REVIEWERS", "UNKNOWN_STATUS", "PARTICIPANT_NOT_IN_PROJECT", "UNEXPECTED_REVIEWER", "REQUEST_REFUSED", "INTERNAL_ERROR" ]
+          },
+          "errors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "field" : {
+                  "type" : "string"
+                },
+                "code" : {
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "reason" : {
+            "type" : "string",
+            "description" : "For WEAK_PASSWORD: why."
+          },
+          "limit" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "For a length reason: the bound."
+          },
+          "correlationId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "code", "status" ]
+      },
       "DefaultReviewersRequest" : {
         "type" : "object",
         "properties" : {
@@ -1388,6 +1457,10 @@
           },
           "mustChangePassword" : {
             "type" : "boolean"
+          },
+          "sessionIdleTimeoutSeconds" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         }
       },

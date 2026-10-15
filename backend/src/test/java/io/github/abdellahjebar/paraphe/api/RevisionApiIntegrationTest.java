@@ -304,6 +304,7 @@ class RevisionApiIntegrationTest extends ApiTestBase {
         UUID revision = ApiScenario.revisionId(submitted);
         String token = ApiScenario.tokenOf(submitted, scenario.control);
         mvc.perform(get("/r/{t}", token));
+        mvc.perform(post("/r/{t}/seen", token));
         mvc.perform(post("/r/{t}/opinion", token).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"statusCode\":\"VSO\"}"));
 

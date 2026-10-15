@@ -177,6 +177,8 @@ class FullReviewCycleTest {
         HttpResponse<byte[]> page = controlOffice.get("/r/" + controlTokenA);
         assertThat(page.statusCode()).isEqualTo(200);
         assertThat((String) read(page, "$.documentTitle")).isEqualTo("Plan de ferraillage des poutres");
+        // The page only counts as opened once a person acts on it.
+        assertThat(controlOffice.postJson("/r/" + controlTokenA + "/seen", "{}").statusCode()).isEqualTo(204);
         assertThat(controlOffice.get("/r/" + controlTokenA + "/document").body()).isEqualTo(TestFixtures.PDF);
         assertThat(controlOffice.postJson("/r/" + controlTokenA + "/opinion", answer("VSO", "")).statusCode())
                 .isEqualTo(200);

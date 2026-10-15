@@ -85,8 +85,43 @@ class IdentityDomainTest {
     }
 
     @Test
-    void leadingOrTrailingSpaceIsRefused() {
-        assertThatThrownBy(() -> PasswordPolicy.check(" a long enough passphrase", "k@example.org"))
-                .isInstanceOf(WeakPasswordException.class);
+    void spacesAtTheEdgesAreAcceptedBecauseNothingIsTruncated() {
+        assertThatCode(() -> PasswordPolicy.check("  a long passphrase with spaces  ", "k@example.org"))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void fifteenCharactersAreTheMinimumAndAccentsCountOnce() {
+        assertThatThrownBy(() -> PasswordPolicy.check("fourteen chars", "k@example.org"))
+                .isInstanceOfSatisfying(WeakPasswordException.class,
+                        e -> assertThat(e.reason()).isEqualTo(WeakPasswordException.Reason.TOO_SHORT));
+        assertThatCode(() -> PasswordPolicy.check("fifteen chars!!", "k@example.org"))
+                .doesNotThrowAnyException();
+        assertThatCode(() -> PasswordPolicy.check("\u00e9\u00e0\u00e8 \u00f9\u00e7\u00e2 \u00ea\u00ee\u00f4 abc",
+                "k@example.org")).doesNotThrowAnyException();
+    }
+
+    @Test
+    void sixtyFourAccentedCharactersAreStillAccepted() {
+        String accented = "\u00e9\u00e0\u00e8\u00f9\u00e7\u00e2\u00ea\u00ee\u00f4\u00fb".repeat(6) + "abcd";
+        assertThatCode(() -> PasswordPolicy.check(accented, "k@example.org")).doesNotThrowAnyException();
+    }
+
+    @Test
+    void aCommonPasswordIsRefusedWhateverTheCaseAndSpacing() {
+        PasswordBlocklist list = candidate -> PasswordBlocklist.key(candidate).equals("passwordpassword");
+        assertThatThrownBy(() -> PasswordPolicy.check("Password Password", "k@example.org", list))
+                .isInstanceOfSatisfying(WeakPasswordException.class,
+                        e -> assertThat(e.reason()).isEqualTo(WeakPasswordException.Reason.COMMON));
+    }
+
+    @Test
+    void theAccountNameAndTheServiceNameAreNotAcceptedInsideAPassword() {
+        assertThatThrownBy(() -> PasswordPolicy.check("my-khawla-secret-phrase", "khawla@example.org"))
+                .isInstanceOfSatisfying(WeakPasswordException.class,
+                        e -> assertThat(e.reason()).isEqualTo(WeakPasswordException.Reason.CONTAINS_NAME));
+        assertThatThrownBy(() -> PasswordPolicy.check("paraphe is a nice tool", "k@example.org"))
+                .isInstanceOfSatisfying(WeakPasswordException.class,
+                        e -> assertThat(e.reason()).isEqualTo(WeakPasswordException.Reason.CONTAINS_NAME));
     }
 }

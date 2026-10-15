@@ -214,4 +214,40 @@ class ReviewerApiIntegrationTest extends ApiTestBase {
         assertThat(result.getResponse().getHeaders("Set-Cookie")).isEmpty();
         assertThat(result.getRequest().getSession(false)).isNull();
     }
+
+    private String linkStatusSeenByTheContractor() throws Exception {
+        UUID revision = ApiScenario.revisionId(submitted);
+        MvcResult review = mvc.perform(get("/api/projects/{p}/revisions/{r}/review", scenario.project, revision)
+                        .session(session))
+                .andExpect(status().isOk())
+                .andReturn();
+        List<String> statuses = JsonPath.read(review.getResponse().getContentAsString(),
+                "$.reviewers[?(@.reviewerId=='%s')].linkStatus".formatted(scenario.control));
+        return statuses.get(0);
+    }
+
+    @Test
+    void loadingThePageAloneNeverMarksTheLinkAsOpened() throws Exception {
+        mvc.perform(get("/r/{t}", controlToken)).andExpect(status().isOk());
+        mvc.perform(get("/r/{t}/document", controlToken)).andExpect(status().isOk());
+
+        assertThat(linkStatusSeenByTheContractor()).isEqualTo("ISSUED");
+    }
+
+    @Test
+    void theFirstRealGestureMarksTheLinkAsOpenedOnce() throws Exception {
+        mvc.perform(post("/r/{t}/seen", controlToken)).andExpect(status().isNoContent());
+        mvc.perform(post("/r/{t}/seen", controlToken)).andExpect(status().isNoContent());
+
+        assertThat(linkStatusSeenByTheContractor()).isEqualTo("OPENED");
+    }
+
+    @Test
+    void anUnusableLinkCannotBeMarkedAsSeenAndSaysNothingMore() throws Exception {
+        MvcResult result = mvc.perform(post("/r/{t}/seen", "tokenthatdoesnotexisttokenthatdoesnotexist1234"))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).doesNotContain("tokenthatdoesnotexist");
+    }
 }

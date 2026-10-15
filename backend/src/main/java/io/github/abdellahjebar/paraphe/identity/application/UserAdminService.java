@@ -23,10 +23,14 @@ public class UserAdminService {
 
     private final UserRepository users;
     private final PasswordHasher hasher;
+    private final io.github.abdellahjebar.paraphe.identity.domain.PasswordBlocklist blocklist;
     private final AuditLog auditLog;
     private final Clock clock;
 
-    UserAdminService(UserRepository users, PasswordHasher hasher, AuditLog auditLog, Clock clock) {
+    UserAdminService(UserRepository users, PasswordHasher hasher,
+                     io.github.abdellahjebar.paraphe.identity.domain.PasswordBlocklist blocklist,
+                     AuditLog auditLog, Clock clock) {
+        this.blocklist = blocklist;
         this.users = users;
         this.hasher = hasher;
         this.auditLog = auditLog;
@@ -39,7 +43,7 @@ public class UserAdminService {
      */
     public AppUser createUser(String email, String displayName, String rawPassword,
                               boolean mustChangePassword, String actor) {
-        PasswordPolicy.check(rawPassword, email);
+        PasswordPolicy.check(rawPassword, email, blocklist);
         String normalized = AppUser.normalizeEmail(email);
         if (users.findByEmail(normalized).isPresent()) {
             throw new EmailAlreadyUsedException();
@@ -72,9 +76,10 @@ public class UserAdminService {
         if (currentPassword == null || !hasher.matches(currentPassword, user.passwordHash())) {
             throw new InvalidCredentialsException();
         }
-        PasswordPolicy.check(newPassword, user.email());
+        PasswordPolicy.check(newPassword, user.email(), blocklist);
         if (newPassword.equals(currentPassword)) {
             throw new io.github.abdellahjebar.paraphe.identity.domain.WeakPasswordException(
+                    io.github.abdellahjebar.paraphe.identity.domain.WeakPasswordException.Reason.SAME_AS_CURRENT,
                     "The new password must be different from the current one");
         }
         users.updatePassword(userId, hasher.hash(newPassword), false);

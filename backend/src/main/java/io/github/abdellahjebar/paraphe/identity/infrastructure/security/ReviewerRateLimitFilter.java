@@ -24,7 +24,7 @@ final class ReviewerRateLimitFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         if (!limiter.tryAcquire("reviewer:" + request.getRemoteAddr())) {
             response.setHeader("Retry-After", String.valueOf(limiter.windowLength().toSeconds()));
-            ProblemResponses.write(response, 429, "Too Many Requests");
+            ProblemResponses.write(response, 429, "Too Many Requests", io.github.abdellahjebar.paraphe.shared.web.ErrorCode.TOO_MANY_REQUESTS);
             return;
         }
         chain.doFilter(request, response);

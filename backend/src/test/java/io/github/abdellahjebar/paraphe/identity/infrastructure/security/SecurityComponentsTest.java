@@ -10,22 +10,23 @@ import org.junit.jupiter.api.Test;
 class SecurityComponentsTest {
 
     @Test
-    void hashingUsesCostTwelveByDefault() {
-        BCryptPasswordHasher hasher = new BCryptPasswordHasher(12, false);
+    void hashingUsesArgon2idWithTheOwaspMinimumByDefault() {
+        Argon2idPasswordHasher hasher = new Argon2idPasswordHasher(19456, false);
 
-        assertThat(hasher.hash("a long passphrase")).startsWith("$2a$12$");
+        assertThat(hasher.hash("a long passphrase")).startsWith("$argon2id$v=19$m=19456,t=2,p=1$");
     }
 
     @Test
-    void aWeakCostIsRefusedUnlessExplicitlyAllowed() {
-        assertThatThrownBy(() -> new BCryptPasswordHasher(4, false))
+    void aWeakMemorySizeIsRefusedUnlessExplicitlyAllowed() {
+        assertThatThrownBy(() -> new Argon2idPasswordHasher(1024, false))
                 .isInstanceOf(IllegalStateException.class);
-        assertThat(new BCryptPasswordHasher(4, true).hash("a long passphrase")).startsWith("$2a$04$");
+        assertThat(new Argon2idPasswordHasher(1024, true).hash("a long passphrase"))
+                .startsWith("$argon2id$v=19$m=1024,");
     }
 
     @Test
     void hashingChecksPasswordsAndNeverStoresThemInClear() {
-        BCryptPasswordHasher hasher = new BCryptPasswordHasher(4, true);
+        Argon2idPasswordHasher hasher = new Argon2idPasswordHasher(1024, true);
         String hash = hasher.hash("a long passphrase");
 
         assertThat(hash).doesNotContain("passphrase");
@@ -37,18 +38,76 @@ class SecurityComponentsTest {
 
     @Test
     void twoHashesOfTheSamePasswordDiffer() {
-        BCryptPasswordHasher hasher = new BCryptPasswordHasher(4, true);
+        Argon2idPasswordHasher hasher = new Argon2idPasswordHasher(1024, true);
 
         assertThat(hasher.hash("a long passphrase")).isNotEqualTo(hasher.hash("a long passphrase"));
     }
 
     @Test
+    void theSameTextTypedInTwoUnicodeFormsGivesTheSameLogin() {
+        Argon2idPasswordHasher hasher = new Argon2idPasswordHasher(1024, true);
+        String composed = "café au lait chaud";
+        String decomposed = "café au lait chaud";
+
+        assertThat(hasher.matches(decomposed, hasher.hash(composed))).isTrue();
+    }
+
+    @Test
+    void passwordsOverSeventyTwoBytesAreHashedWholeAndNotTruncated() {
+        Argon2idPasswordHasher hasher = new Argon2idPasswordHasher(1024, true);
+        String longOne = "é".repeat(60) + "A";
+        String sameStart = "é".repeat(60) + "B";
+        String hash = hasher.hash(longOne);
+
+        assertThat(hasher.matches(longOne, hash)).isTrue();
+        assertThat(hasher.matches(sameStart, hash)).isFalse();
+    }
+
+    @Test
+    void anOlderBcryptHashStillWorksAndIsFlaggedForReplacement() {
+        Argon2idPasswordHasher hasher = new Argon2idPasswordHasher(1024, true);
+        String legacy = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder(4)
+                .encode("a long passphrase");
+
+        assertThat(hasher.matches("a long passphrase", legacy)).isTrue();
+        assertThat(hasher.matches("not the passphrase", legacy)).isFalse();
+        assertThat(hasher.needsRehash(legacy)).isTrue();
+        assertThat(hasher.needsRehash(hasher.hash("a long passphrase"))).isFalse();
+    }
+
+    @Test
+    void aHashMadeWithOtherParametersIsFlaggedForReplacement() {
+        String other = new Argon2idPasswordHasher(2048, true).hash("a long passphrase");
+
+        assertThat(new Argon2idPasswordHasher(1024, true).needsRehash(other)).isTrue();
+    }
+
+    @Test
+    void unknownHashFormatsNeverMatch() {
+        Argon2idPasswordHasher hasher = new Argon2idPasswordHasher(1024, true);
+
+        assertThat(hasher.matches("a long passphrase", "plain text")).isFalse();
+        assertThat(hasher.matches("a long passphrase", "{noop}a long passphrase")).isFalse();
+    }
+
+    @Test
     void burningTimeNeverFailsEvenOnOddInput() {
-        BCryptPasswordHasher hasher = new BCryptPasswordHasher(4, true);
+        Argon2idPasswordHasher hasher = new Argon2idPasswordHasher(1024, true);
 
         hasher.burnTime(null);
         hasher.burnTime("");
         hasher.burnTime("x".repeat(500));
+    }
+
+    @Test
+    void theShippedBlocklistLoadsAndIgnoresCaseAndSpaces() {
+        ResourcePasswordBlocklist list = new ResourcePasswordBlocklist();
+
+        assertThat(list.size()).isGreaterThan(100);
+        assertThat(list.contains("PASSWORDPASSWORD")).isTrue();
+        assertThat(list.contains("pass word pass word")).isTrue();
+        assertThat(list.contains("a long passphrase nobody else uses")).isFalse();
+        assertThat(list.contains(null)).isFalse();
     }
 
     @Test

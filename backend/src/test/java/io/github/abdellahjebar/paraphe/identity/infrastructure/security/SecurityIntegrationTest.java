@@ -320,4 +320,13 @@ class SecurityIntegrationTest {
                 .andExpect(header().string("X-Frame-Options", "DENY"))
                 .andExpect(header().string("X-Content-Type-Options", "nosniff"));
     }
+
+    @Test
+    void theSignedInUserLearnsHowLongTheSessionSurvivesIdle() throws Exception {
+        MockHttpSession session = signIn(account(false), PASSWORD);
+
+        mvc.perform(get("/api/auth/me").session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.sessionIdleTimeoutSeconds").isNumber());
+    }
 }

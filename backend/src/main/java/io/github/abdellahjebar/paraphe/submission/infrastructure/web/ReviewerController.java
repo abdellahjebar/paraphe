@@ -69,6 +69,16 @@ class ReviewerController {
                 view.myLastOpinion().map(MyOpinion::of).orElse(null));
     }
 
+    /**
+     * Called by the page after the first real gesture. Until then the link stays "issued", so a scanner
+     * that merely loads the page cannot make it look read.
+     */
+    @PostMapping("/seen")
+    ResponseEntity<Void> seen(@PathVariable String token) {
+        submission.confirmLinkSeen(token).orElseThrow(LinkRefusedException::new);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/document")
     ResponseEntity<InputStreamResource> document(@PathVariable String token) {
         RevisionFile file = submission.viewDocumentByLink(token).orElseThrow(LinkRefusedException::new);

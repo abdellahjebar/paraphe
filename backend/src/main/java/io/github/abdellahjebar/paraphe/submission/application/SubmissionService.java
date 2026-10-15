@@ -80,7 +80,7 @@ public class SubmissionService {
 
     /** What the reviewer sees when opening their link; empty when the link is not usable. */
     public Optional<ReviewerView> openLink(String rawToken) {
-        return links.open(rawToken).map(link -> {
+        return links.resolve(rawToken).map(link -> {
             Revision revision = documents.revision(link.revisionId());
             Document document = documents.document(revision.documentId());
             Optional<Opinion> mine = reviews.history(link.revisionId()).stream()
@@ -89,6 +89,15 @@ public class SubmissionService {
             return new ReviewerView(document.title(), revision.label(), revision.sequence(),
                     isSuperseded(revision), link.expiresAt(), projects.statuses(document.projectId()), mine);
         });
+    }
+
+    /**
+     * The reviewer's page was used by a person: a gesture, not just a fetch. Records the first
+     * opening. Fetching the page alone never does, because mail-security scanners that run scripts
+     * would otherwise mark every link as opened. Empty when the link is not usable.
+     */
+    public Optional<ResolvedLink> confirmLinkSeen(String rawToken) {
+        return links.open(rawToken);
     }
 
     /** The reviewer answers through their link. Empty when the link is not usable. */

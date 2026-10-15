@@ -28,7 +28,9 @@ spring:
 server:
   servlet:
     session:
-      timeout: 8h
+      # Idle time before a signed-in session ends. Any request starts the period again, and the client
+      # warns before it ends (WCAG 2.2.1). Override with SESSION_IDLE_TIMEOUT, for example 30m or 8h.
+      timeout: ${SESSION_IDLE_TIMEOUT:60m}
       tracking-modes: cookie
       cookie:
         http-only: true
@@ -65,6 +67,8 @@ paraphe:
   public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
 
 springdoc:
+  # Keep the error schema, which no route references directly, so clients can generate its types.
+  remove-broken-reference-definitions: false
   api-docs:
     # The contract is generated from the code. It is only served when asked for (tests, local tooling).
     enabled: ${OPENAPI_ENABLED:false}

@@ -96,12 +96,14 @@ its evidence is and what would change it.
 
 ## Backend gaps found while checking forms
 
-| Gap | Standard | Planned action |
+All four were closed on 2026-10-15.
+
+| Gap | Standard | Resolution |
 |---|---|---|
-| Minimum password length is 12; a password used alone should have at least 15. | NIST SP 800-63B-4 | Decide and raise, with a test |
-| No check against lists of common or compromised passwords. | NIST SP 800-63B-4 | Add a blocklist check |
-| The 64-character maximum can be reached by 72 bytes first with accented characters, so a permitted length may be refused. | NIST: allow at least 64 characters | Pre-hash before bcrypt, or move to a memory-hard hash |
-| Validation messages are English text. | Decision 47 | Add stable error codes to the API contract |
+| Minimum password length was 12; a password used alone should have at least 15. | NIST SP 800-63B-4 | Minimum 15, maximum 128 code points |
+| No check against lists of common passwords. | NIST SP 800-63B-4 | Embedded refusal list (entries of 15 characters or more) and a refusal of the account and service names |
+| The 64-character maximum could be reached by 72 bytes first (bcrypt) with accented characters. | NIST: allow at least 64 characters | Argon2id after NFC normalisation; bcrypt hashes upgraded at sign-in |
+| Validation messages were English text. | Decision 47 | Stable `code` on every error, `errors` for fields |
 
 ## Interaction and accessibility
 
@@ -118,10 +120,15 @@ its evidence is and what would change it.
 
 ## Backend gaps found while checking interaction
 
-| Gap | Why it matters | Planned action |
+Closed on 2026-10-15.
+
+| Gap | Why it mattered | Resolution |
 |---|---|---|
-| The server marks a link as opened on the first `GET /r/{token}`. | Mail-security scanners that run scripts can trigger it; the page shell itself has no effect, but the API call behind it does. | Mark it on the first real action (a scroll, a click, the plan being fetched), or keep it but label it as weak (decision 55) |
-| No session time-out is configured, so the framework default of 30 minutes applies silently. | WCAG 2.2.1 needs a warning and a way to extend. | Set an explicit time-out and an endpoint to extend the session |
+| The server marked a link as opened on the first `GET /r/{token}`. | Mail-security scanners that run scripts could trigger it. | Reading is side-effect free; `POST /r/{token}/seen`, called after a real gesture, records the opening |
+| The idle time-out (8 hours) was long and the interface had no way to know it. | WCAG 2.2.1 needs a warning and a way to extend. | 60 minutes, configurable; the user answers carry `sessionIdleTimeoutSeconds`; any call extends the session |
+
+*Correction: an earlier version of this document said no session time-out was configured. That was wrong: 8 hours was set
+explicitly in `application.yaml`.*
 
 ## Name
 

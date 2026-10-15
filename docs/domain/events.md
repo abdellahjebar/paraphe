@@ -23,7 +23,7 @@ a file name, or a reviewer's free-text comment.
 | `RevisionSubmitted` | user | `documentId`, `label`, `sequence`, `sha256` | A PDF was deposited |
 | `ReviewOpened` | user | `expectedReviewers` | The review was opened for a revision |
 | `ReviewLinkIssued` | user | `reviewerId`, `linkId`, `expiresAt` | A link was issued (revokes the previous one) |
-| `ReviewLinkOpened` | reviewer | `linkId` | The reviewer opened their page |
+| `ReviewLinkOpened` | reviewer | `linkId` | The reviewer's page was used (first real gesture, `POST /r/{token}/seen`); merely loading it records nothing |
 | `ReviewLinkRevoked` | user | `reviewerId` | A link was revoked |
 | `ReviewLinkRejected` | reviewer | `reason` (`EXPIRED` or `REVOKED`), `linkId` | A known link that could no longer be used was presented |
 | `DocumentViewed` | reviewer | `linkId`, `sha256` | The plan was actually fetched |
@@ -61,6 +61,7 @@ let anyone fill the journal).
 | `LoginSucceeded` | `user:<id>` | none |
 | `LoginFailed` | `user:<id>` | none (only for an existing account) |
 | `PasswordChanged` | `user:<id>` | none |
+| `PasswordHashUpgraded` | `user:<id>` | none (an older hash was replaced at sign-in) |
 
 ## Reading the journal
 

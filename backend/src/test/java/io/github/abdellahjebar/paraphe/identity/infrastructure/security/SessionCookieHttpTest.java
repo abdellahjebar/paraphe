@@ -68,6 +68,8 @@ class SessionCookieHttpTest {
                 .build());
 
         assertThat(login.statusCode()).isEqualTo(200);
+        // The idle time-out is set on the embedded server, so its value is only visible over real HTTP.
+        assertThat(login.body()).contains("\"sessionIdleTimeoutSeconds\":3600");
         String session = cookieNamed(login.headers().allValues("Set-Cookie"), "JSESSIONID");
         assertThat(session).containsIgnoringCase("HttpOnly")
                 .containsIgnoringCase("Secure")

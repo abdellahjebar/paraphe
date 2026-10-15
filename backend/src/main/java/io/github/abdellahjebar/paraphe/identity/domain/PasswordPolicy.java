@@ -1,44 +1,64 @@
 package io.github.abdellahjebar.paraphe.identity.domain;
 
+import java.util.Locale;
+
 /**
- * What a new password must satisfy. Deliberately about length rather than character classes: a
- * long passphrase is stronger and easier to remember than a short "complex" one.
+ * What a new password must satisfy, following NIST SP 800-63B-4: length rather than character classes,
+ * a refusal list of common passwords, no rule about spaces or composition, no periodic change.
+ *
+ * <p>Length counts Unicode code points, so an accented passphrase is not penalised.
  */
 public final class PasswordPolicy {
 
-    public static final int MIN_LENGTH = 12;
-    /** Keeps hashing cost bounded and stays under bcrypt's 72-byte input limit with room to spare. */
-    public static final int MAX_LENGTH = 64;
+    /** A password used on its own, without a second factor. */
+    public static final int MIN_LENGTH = 15;
+    /** Bounds hashing cost; well above the 64 characters a verifier must accept. */
+    public static final int MAX_LENGTH = 128;
+    private static final int MIN_NAME_LENGTH = 4;
+    private static final String SERVICE_NAME = "paraphe";
 
     private PasswordPolicy() {
     }
 
     public static void check(String password, String email) {
-        if (password == null || password.isBlank()) {
-            throw new WeakPasswordException("The password must not be empty");
+        check(password, email, PasswordBlocklist.NONE);
+    }
+
+    public static void check(String password, String email, PasswordBlocklist blocklist) {
+        if (password == null || password.isEmpty()) {
+            throw new WeakPasswordException(WeakPasswordException.Reason.EMPTY, "The password must not be empty");
         }
-        if (password.length() < MIN_LENGTH) {
-            throw new WeakPasswordException("The password must have at least %d characters".formatted(MIN_LENGTH));
+        int length = password.codePointCount(0, password.length());
+        if (length < MIN_LENGTH) {
+            throw new WeakPasswordException(WeakPasswordException.Reason.TOO_SHORT, MIN_LENGTH,
+                    "The password must have at least %d characters".formatted(MIN_LENGTH));
         }
-        if (password.length() > MAX_LENGTH) {
-            throw new WeakPasswordException("The password must have at most %d characters".formatted(MAX_LENGTH));
+        if (length > MAX_LENGTH) {
+            throw new WeakPasswordException(WeakPasswordException.Reason.TOO_LONG, MAX_LENGTH,
+                    "The password must have at most %d characters".formatted(MAX_LENGTH));
         }
-        // bcrypt only reads the first 72 bytes: refuse longer input rather than silently truncate it.
-        if (password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72) {
-            throw new WeakPasswordException("The password is too long once encoded");
-        }
-        if (password.strip().length() != password.length()) {
-            throw new WeakPasswordException("The password must not start or end with a space");
+        if (password.isBlank()) {
+            throw new WeakPasswordException(WeakPasswordException.Reason.EMPTY, "The password must not be blank");
         }
         String normalizedEmail = AppUser.normalizeEmail(email);
         String localPart = normalizedEmail.contains("@")
                 ? normalizedEmail.substring(0, normalizedEmail.indexOf('@')) : normalizedEmail;
-        String lowered = password.toLowerCase(java.util.Locale.ROOT);
+        String lowered = password.toLowerCase(Locale.ROOT);
         if (lowered.equals(normalizedEmail) || (!localPart.isEmpty() && lowered.equals(localPart))) {
-            throw new WeakPasswordException("The password must not be the email address");
+            throw new WeakPasswordException(WeakPasswordException.Reason.SAME_AS_EMAIL,
+                    "The password must not be the email address");
         }
-        if (password.chars().distinct().count() < 5) {
-            throw new WeakPasswordException("The password is too repetitive");
+        if ((localPart.length() >= MIN_NAME_LENGTH && lowered.contains(localPart)) || lowered.contains(SERVICE_NAME)) {
+            throw new WeakPasswordException(WeakPasswordException.Reason.CONTAINS_NAME,
+                    "The password must not contain the account name or the name of the service");
+        }
+        if (password.codePoints().distinct().count() < 5) {
+            throw new WeakPasswordException(WeakPasswordException.Reason.TOO_REPETITIVE,
+                    "The password is too repetitive");
+        }
+        if (blocklist.contains(password)) {
+            throw new WeakPasswordException(WeakPasswordException.Reason.COMMON,
+                    "The password is too common");
         }
     }
 }

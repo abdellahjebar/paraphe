@@ -72,6 +72,11 @@ public class AuthenticationService {
         AppUser user = found.get();
         limiter.reset(accountKey);
         users.recordLogin(user.id(), clock.instant());
+        if (hasher.needsRehash(user.passwordHash())) {
+            // The raw password is only known here, so this is the one moment an old hash can be replaced.
+            users.updatePassword(user.id(), hasher.hash(password), user.mustChangePassword());
+            record("PasswordHashUpgraded", user);
+        }
         record("LoginSucceeded", user);
         return AuthenticationResult.success(user);
     }

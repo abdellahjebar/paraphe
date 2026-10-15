@@ -6,6 +6,9 @@ public interface PasswordHasher {
 
     boolean matches(String rawPassword, String hash);
 
+    /** True when the stored hash uses an older algorithm or weaker parameters than a new hash would. */
+    boolean needsRehash(String hash);
+
     /**
      * Does the same work as {@link #matches} against a throwaway hash. Called when the account does
      * not exist, so a missing account and a wrong password take the same time.

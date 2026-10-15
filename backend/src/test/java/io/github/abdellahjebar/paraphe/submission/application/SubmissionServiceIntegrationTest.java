@@ -252,6 +252,9 @@ class SubmissionServiceIntegrationTest {
         assertThat(view.availableStatuses()).extracting(s -> s.code())
                 .containsExactlyInAnyOrder("VSO", "VAO", "VPI", "NC");
         assertThat(view.myLastOpinion()).isEmpty();
+        // Reading the page has no effect; only an explicit confirmation records the opening.
+        assertThat(eventTypes(submitted.revision().id())).doesNotContain("ReviewLinkOpened");
+        submission.confirmLinkSeen(tokenOf(submitted, control)).orElseThrow();
         assertThat(eventTypes(submitted.revision().id())).contains("ReviewLinkOpened");
     }
 

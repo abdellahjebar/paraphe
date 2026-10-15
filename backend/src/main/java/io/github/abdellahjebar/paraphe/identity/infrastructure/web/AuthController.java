@@ -54,7 +54,12 @@ class AuthController {
                                  @NotBlank @Size(max = 200) String newPassword) {
     }
 
-    record UserResponse(UUID id, String email, String displayName, boolean mustChangePassword) {
+    /**
+     * @param sessionIdleTimeoutSeconds how long the session survives without a request. Any call, such as
+     *     {@code GET /api/auth/me}, starts the period again, so the client can warn before it ends.
+     */
+    record UserResponse(UUID id, String email, String displayName, boolean mustChangePassword,
+                        int sessionIdleTimeoutSeconds) {
     }
 
     @PostMapping("/login")
@@ -63,11 +68,13 @@ class AuthController {
         AuthenticationResult result = authentication.authenticate(body.email(), body.password(),
                 request.getRemoteAddr());
         return switch (result.outcome()) {
-            case LOCKED -> problem(HttpStatus.TOO_MANY_REQUESTS, "Too many attempts, try again later");
-            case INVALID_CREDENTIALS -> problem(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+            case LOCKED -> problem(HttpStatus.TOO_MANY_REQUESTS, "Too many attempts, try again later",
+                    io.github.abdellahjebar.paraphe.shared.web.ErrorCode.TOO_MANY_ATTEMPTS);
+            case INVALID_CREDENTIALS -> problem(HttpStatus.UNAUTHORIZED, "Invalid email or password",
+                    io.github.abdellahjebar.paraphe.shared.web.ErrorCode.INVALID_CREDENTIALS);
             case SUCCESS -> {
                 signIn(result.user(), request, response);
-                yield ResponseEntity.ok(toResponse(principalOf(result.user())));
+                yield ResponseEntity.ok(toResponse(principalOf(result.user()), request));
             }
         };
     }
@@ -83,8 +90,8 @@ class AuthController {
     }
 
     @GetMapping("/me")
-    UserResponse me(@AuthenticationPrincipal AuthenticatedUser user) {
-        return toResponse(user);
+    UserResponse me(@AuthenticationPrincipal AuthenticatedUser user, HttpServletRequest request) {
+        return toResponse(user, request);
     }
 
     @PostMapping("/password")
@@ -95,7 +102,7 @@ class AuthController {
         AppUser refreshed = users.find(new UserId(user.userId())).orElseThrow();
         // Same session, new principal: the "must change password" restriction is lifted at once.
         saveAuthentication(refreshed, request, response);
-        return ResponseEntity.ok(toResponse(principalOf(refreshed)));
+        return ResponseEntity.ok(toResponse(principalOf(refreshed), request));
     }
 
     private void signIn(AppUser user, HttpServletRequest request, HttpServletResponse response) {
@@ -121,13 +128,17 @@ class AuthController {
                 user.mustChangePassword());
     }
 
-    private static UserResponse toResponse(AuthenticatedUser user) {
-        return new UserResponse(user.userId(), user.email(), user.displayName(), user.mustChangePassword());
+    private static UserResponse toResponse(AuthenticatedUser user, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        int timeout = session == null ? 0 : session.getMaxInactiveInterval();
+        return new UserResponse(user.userId(), user.email(), user.displayName(), user.mustChangePassword(),
+                timeout);
     }
 
-    private static ResponseEntity<ProblemDetail> problem(HttpStatus status, String title) {
+    private static ResponseEntity<ProblemDetail> problem(HttpStatus status, String title, io.github.abdellahjebar.paraphe.shared.web.ErrorCode code) {
         ProblemDetail detail = ProblemDetail.forStatus(status);
         detail.setTitle(title);
+        detail.setProperty("code", code.name());
         return ResponseEntity.status(status).body(detail);
     }
 }

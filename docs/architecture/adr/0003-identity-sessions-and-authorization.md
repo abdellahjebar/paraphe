@@ -20,14 +20,20 @@ anything that repeats a request path (logs, error bodies, `Referer`) can leak it
 1. **Accounts** live in `app_user`. There is **no public sign-up**: the first account comes from
    configuration while none exists, further ones from an administrator command, and a new account
    must choose its own password before doing anything else.
-2. **Passwords** are hashed with bcrypt at cost 12. A cost below 10 is refused at startup unless
-   weak hashing is explicitly allowed, which only the test configuration does. The policy is about
-   length (12 to 64 characters, at most 72 bytes) rather than character classes.
+2. **Passwords** are hashed with Argon2id (19 MiB, 2 iterations, 1 lane, the OWASP minimum) after NFC
+   normalisation. A smaller memory size is refused at startup unless weak hashing is explicitly
+   allowed, which only the test configuration does. Hashes made earlier with bcrypt are still
+   accepted and replaced at the next successful sign-in. The policy follows NIST SP 800-63B-4: 15 to
+   128 characters (Unicode code points), no character classes, no rule about spaces, no periodic
+   change, a refusal list of common passwords, and the account name and the service name refused
+   inside a password. *(Amended 2026-10-15; the first version used bcrypt, 12 to 64 characters.)*
 3. **Sign-in** gives the same answer for an unknown account and a wrong password, and spends the same
    time on both. Failures are counted per account and per client address (5 in 15 minutes) and lock
    both; an unknown account locks like a real one, so lockout reveals nothing.
 4. **Sessions** are server-side, in memory, in a `HttpOnly`, `SameSite=Lax` cookie that is `Secure`
-   in production. The session id is replaced at sign-in.
+   in production. The session id is replaced at sign-in. The idle time-out is explicit (60 minutes,
+   `SESSION_IDLE_TIMEOUT`), and the answers about the signed-in user carry it, so the interface can
+   warn before it ends and extend the session with any call such as `GET /api/auth/me`.
 5. **Three filter chains**: `/r/**` (reviewers: no session, no CSRF because the token is the
    credential, rate limited, `no-store`, `no-referrer`), `/api/**` (contractor: session, CSRF
    cookie + header, JSON errors), and everything else refused apart from the health probe.

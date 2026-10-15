@@ -72,7 +72,7 @@ class IdentityServiceIntegrationTest {
         String stored = jdbc.sql("SELECT password_hash FROM app_user WHERE id = :id")
                 .param("id", user.id().value()).query(String.class).single();
 
-        assertThat(stored).startsWith("$2a$").doesNotContain(PASSWORD);
+        assertThat(stored).startsWith("$argon2id$").doesNotContain(PASSWORD);
     }
 
     @Test
