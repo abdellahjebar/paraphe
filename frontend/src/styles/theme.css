@@ -1,0 +1,146 @@
+/*
+ * Theme "Encre révisée" (docs/frontend/design-decisions.md, decisions 14 to 19).
+ *
+ * Colour carries meaning only for a state; the interface itself is ink and cool greys.
+ * Every pair below was measured: text 4.5:1 or more, field borders, buttons and focus 3:1 or more.
+ * Never write a colour in a component: use a token, so a change is made in one place.
+ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --radius: 0.5rem;
+
+  --background: #ffffff;
+  --foreground: #14181f;
+  --card: #f6f8fa;
+  --card-foreground: #14181f;
+  --popover: #ffffff;
+  --popover-foreground: #14181f;
+  --primary: #14181f;
+  --primary-foreground: #ffffff;
+  --secondary: #edf1f5;
+  --secondary-foreground: #14181f;
+  --muted: #edf1f5;
+  --muted-foreground: #566170;
+  --accent: #edf1f5;
+  --accent-foreground: #14181f;
+  --destructive: #b3261e;
+  --destructive-foreground: #ffffff;
+  /* Decorative separators. Not enough on their own to find a field: see --input. */
+  --border: #d3dae2;
+  /* The edge of a field, a checkbox or a radio: 3:1 against the page and the cards. */
+  --input: #78828f;
+  --ring: #14181f;
+  --link: #1f4e8c;
+
+  --status-approved-fg: #14683a;
+  --status-approved-bg: #e3f3e9;
+  --status-reserves-fg: #7f4b00;
+  --status-reserves-bg: #fdefd3;
+  --status-pending-fg: #2c4a76;
+  --status-pending-bg: #e8eef6;
+  --status-revise-fg: #b3261e;
+  --status-revise-bg: #fce6e3;
+  --status-info-fg: #444b55;
+  --status-info-bg: #edf0f3;
+  --status-neutral-fg: #566170;
+  --status-neutral-bg: #f1f3f5;
+  --status-chase-fg: #7f4b00;
+  --status-chase-bg: #fff5dd;
+  --status-late-fg: #ffffff;
+  --status-late-bg: #b3261e;
+
+  color-scheme: light;
+}
+
+.dark {
+  --background: #0e1116;
+  --foreground: #eceff3;
+  --card: #151a21;
+  --card-foreground: #eceff3;
+  --popover: #151a21;
+  --popover-foreground: #eceff3;
+  --primary: #eceff3;
+  --primary-foreground: #0e1116;
+  --secondary: #1d232b;
+  --secondary-foreground: #eceff3;
+  --muted: #1d232b;
+  --muted-foreground: #b4bec9;
+  --accent: #1d232b;
+  --accent-foreground: #eceff3;
+  --destructive: #ffa198;
+  --destructive-foreground: #0e1116;
+  --border: #2b343f;
+  --input: #66717f;
+  --ring: #eceff3;
+  --link: #a8c5ec;
+
+  --status-approved-fg: #74d9a0;
+  --status-approved-bg: #10291a;
+  --status-reserves-fg: #f0bd66;
+  --status-reserves-bg: #33250a;
+  --status-pending-fg: #a8c5ec;
+  --status-pending-bg: #12223a;
+  --status-revise-fg: #ffa198;
+  --status-revise-bg: #3a1311;
+  --status-info-fg: #cbd3dd;
+  --status-info-bg: #222831;
+  --status-neutral-fg: #b4bec9;
+  --status-neutral-bg: #1a1f26;
+  --status-chase-fg: #f0bd66;
+  --status-chase-bg: #2a2007;
+  --status-late-fg: #0e1116;
+  --status-late-bg: #ffa198;
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans:
+    'Source Sans 3', 'Source Sans 3 Fallback', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-link: var(--link);
+
+  --color-status-approved: var(--status-approved-fg);
+  --color-status-approved-soft: var(--status-approved-bg);
+  --color-status-reserves: var(--status-reserves-fg);
+  --color-status-reserves-soft: var(--status-reserves-bg);
+  --color-status-pending: var(--status-pending-fg);
+  --color-status-pending-soft: var(--status-pending-bg);
+  --color-status-revise: var(--status-revise-fg);
+  --color-status-revise-soft: var(--status-revise-bg);
+  --color-status-info: var(--status-info-fg);
+  --color-status-info-soft: var(--status-info-bg);
+  --color-status-neutral: var(--status-neutral-fg);
+  --color-status-neutral-soft: var(--status-neutral-bg);
+  --color-status-chase: var(--status-chase-fg);
+  --color-status-chase-soft: var(--status-chase-bg);
+  --color-status-late: var(--status-late-fg);
+  --color-status-late-soft: var(--status-late-bg);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}

@@ -1,3 +1,98 @@
 @import 'tailwindcss';
 
-/* Theme, fonts and component tokens arrive with sub-step 2. */
+/*
+ * Source Sans 3 (SIL OFL 1.1, licence in src/assets/fonts/OFL.txt), Latin subset, WOFF2 only, three weights.
+ * Self-hosted: nothing is fetched from another origin.
+ */
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/source-sans-3-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/source-sans-3-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/source-sans-3-latin-700-normal.woff2') format('woff2');
+}
+
+/*
+ * The fallback shown while the font loads. Its size and vertical metrics are tuned to Source Sans 3
+ * (measured on the font files) so the text does not jump when the real font arrives.
+ */
+@font-face {
+  font-family: 'Source Sans 3 Fallback';
+  src: local('Arial'), local('Helvetica Neue'), local('Helvetica');
+  size-adjust: 96%;
+  ascent-override: 106.6%;
+  descent-override: 41.7%;
+  line-gap-override: 0%;
+}
+
+@import './theme.css';
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+    /* A sticky header must never hide the element that has the keyboard focus (WCAG 2.4.11). */
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 1rem;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+    text-rendering: optimizeLegibility;
+  }
+
+  a {
+    color: var(--link);
+    text-underline-offset: 0.2em;
+  }
+
+  /* One visible focus ring for everything: 3px, offset, 3:1 against the page in both themes. */
+  :focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--ring) 22%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Windows high contrast replaces colours and removes shadows: keep real borders and outlines. */
+  @media (forced-colors: active) {
+    :focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}
