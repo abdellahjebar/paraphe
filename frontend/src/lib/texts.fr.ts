@@ -26,3 +26,18 @@ export const LOGIN = {
   passwordRequired: 'Saisissez votre mot de passe.',
   failureTitle: 'Connexion impossible',
 } as const
+
+export const CHANGE_PASSWORD = {
+  pageTitle: 'Choisissez votre mot de passe',
+  title: 'Choisissez votre mot de passe',
+  description:
+    'Votre compte vient d’être créé. Pour continuer, remplacez le mot de passe provisoire par le vôtre.',
+  currentLabel: 'Mot de passe provisoire',
+  newLabel: 'Nouveau mot de passe',
+  newHint: 'Au moins 15 caractères. Une phrase facile à retenir convient très bien.',
+  currentRequired: 'Saisissez votre mot de passe provisoire.',
+  newRequired: 'Saisissez votre nouveau mot de passe.',
+  submit: 'Enregistrer et continuer',
+  submitting: 'Enregistrement en cours',
+  failureTitle: 'Le mot de passe n’a pas été modifié',
+} as const
