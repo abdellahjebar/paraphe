@@ -79,6 +79,9 @@ class ReviewerController {
         return ResponseEntity.noContent().build();
     }
 
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/pdf",
+                    schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string", format = "binary")))
     @GetMapping("/document")
     ResponseEntity<InputStreamResource> document(@PathVariable String token) {
         RevisionFile file = submission.viewDocumentByLink(token).orElseThrow(LinkRefusedException::new);

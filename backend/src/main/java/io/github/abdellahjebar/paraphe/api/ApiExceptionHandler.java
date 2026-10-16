@@ -21,6 +21,7 @@ import io.github.abdellahjebar.paraphe.submission.application.LinkRefusedExcepti
 import io.github.abdellahjebar.paraphe.submission.application.NoReviewersException;
 import io.github.abdellahjebar.paraphe.submission.application.UnknownStatusException;
 import io.github.abdellahjebar.paraphe.shared.web.ErrorCode;
+import io.github.abdellahjebar.paraphe.shared.web.FieldErrorCode;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -191,16 +192,17 @@ class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static String fieldCode(FieldError error) {
         String constraint = error.getCode() == null ? "" : error.getCode();
-        return switch (constraint) {
-            case "NotBlank", "NotNull", "NotEmpty" -> "REQUIRED";
+        FieldErrorCode code = switch (constraint) {
+            case "NotBlank", "NotNull", "NotEmpty" -> FieldErrorCode.REQUIRED;
             case "Size" -> error.getRejectedValue() instanceof CharSequence text && isLongerThanMax(error, text)
-                    ? "TOO_LONG" : "TOO_SHORT";
-            case "Min", "DecimalMin", "Positive", "PositiveOrZero" -> "TOO_SMALL";
-            case "Max", "DecimalMax", "Negative", "NegativeOrZero" -> "TOO_LARGE";
-            case "Email" -> "INVALID_EMAIL";
-            case "Pattern" -> "INVALID_FORMAT";
-            default -> "INVALID";
+                    ? FieldErrorCode.TOO_LONG : FieldErrorCode.TOO_SHORT;
+            case "Min", "DecimalMin", "Positive", "PositiveOrZero" -> FieldErrorCode.TOO_SMALL;
+            case "Max", "DecimalMax", "Negative", "NegativeOrZero" -> FieldErrorCode.TOO_LARGE;
+            case "Email" -> FieldErrorCode.INVALID_EMAIL;
+            case "Pattern" -> FieldErrorCode.INVALID_FORMAT;
+            default -> FieldErrorCode.INVALID;
         };
+        return code.name();
     }
 
     private static boolean isLongerThanMax(FieldError error, CharSequence text) {

@@ -82,6 +82,21 @@ Adding a code is a contract change; renaming or removing one is a breaking chang
 Bodies never contain a stack trace, a SQL message, a password, a token, a hash, or the request path.
 `instance` is never set, and `detail` is dropped whenever it would repeat the path.
 
+## The contract is exact
+
+`docs/api/openapi.json` is generated from the code and checked by `OpenApiContractTest`. It is precise enough to
+generate a client from:
+
+- Every property of a response is **required**: Jackson always sends it. The few that can be `null` are named
+  in one table (`OpenApiConfig.NULLABLE`) and appear as `["string", "null"]` or `oneOf: [{$ref}, null]`. A name
+  in that table that no longer exists fails the generation.
+- JSON answers are declared `application/json`; the two PDF routes are declared `application/pdf`.
+- The error body is the `Problem` schema, with closed sets for `code`, for the field error `code` and for the
+  password `reason`.
+- The front end generates its types from this file (`npm run api:generate`) and fails its tests if the committed
+  client is out of date, if the contract gains an error code that has no French message, or if a message is
+  left over for a code that no longer exists.
+
 ## Payloads
 
 - JSON, `camelCase`, UTF-8.

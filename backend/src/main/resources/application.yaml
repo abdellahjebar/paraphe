@@ -67,6 +67,8 @@ paraphe:
   public-base-url: ${PUBLIC_BASE_URL:http://localhost:8080}
 
 springdoc:
+  # Every JSON answer is declared as application/json, not */*, so a client keeps its types.
+  default-produces-media-type: application/json
   # Keep the error schema, which no route references directly, so clients can generate its types.
   remove-broken-reference-definitions: false
   api-docs:

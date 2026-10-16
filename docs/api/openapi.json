@@ -40,7 +40,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/WorkPackageView"
                 }
@@ -77,7 +77,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ThresholdsView"
                 }
@@ -132,7 +132,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/OpinionAccepted"
                 }
@@ -150,7 +150,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
@@ -179,7 +179,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ProjectSummary"
                 }
@@ -216,7 +216,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/WorkPackageView"
                 }
@@ -253,7 +253,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/StatusView"
                 }
@@ -323,7 +323,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/LinkView"
                 }
@@ -404,7 +404,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/StatusResponse"
                 }
@@ -441,7 +441,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ParticipantView"
                 }
@@ -496,7 +496,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
@@ -534,7 +534,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/DocumentSummary"
                 }
@@ -610,7 +610,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/SubmittedResponse"
                 }
@@ -638,7 +638,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/UserResponse"
                 }
@@ -677,9 +677,9 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
-                  "type" : "object"
+                  "$ref" : "#/components/schemas/UserResponse"
                 }
               }
             }
@@ -703,7 +703,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ReviewerPage"
                 }
@@ -729,7 +729,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/pdf" : {
                 "schema" : {
                   "type" : "string",
                   "format" : "binary"
@@ -757,7 +757,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ProjectOverview"
                 }
@@ -792,7 +792,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ReviewResponse"
                 }
@@ -827,7 +827,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
@@ -865,7 +865,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/pdf" : {
                 "schema" : {
                   "type" : "string",
                   "format" : "binary"
@@ -901,7 +901,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/DocumentDetail"
                 }
@@ -942,7 +942,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/DashboardView"
                 }
@@ -960,7 +960,7 @@
           "200" : {
             "description" : "OK",
             "content" : {
-              "*/*" : {
+              "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/UserResponse"
                 }
@@ -1003,14 +1003,17 @@
                   "type" : "string"
                 },
                 "code" : {
-                  "type" : "string"
+                  "type" : "string",
+                  "enum" : [ "REQUIRED", "TOO_LONG", "TOO_SHORT", "TOO_SMALL", "TOO_LARGE", "INVALID_EMAIL", "INVALID_FORMAT", "INVALID" ]
                 }
-              }
+              },
+              "required" : [ "code", "field" ]
             }
           },
           "reason" : {
             "type" : "string",
-            "description" : "For WEAK_PASSWORD: why."
+            "description" : "For WEAK_PASSWORD: why.",
+            "enum" : [ "EMPTY", "TOO_SHORT", "TOO_LONG", "SAME_AS_EMAIL", "CONTAINS_NAME", "COMMON", "TOO_REPETITIVE", "SAME_AS_CURRENT" ]
           },
           "limit" : {
             "type" : "integer",
@@ -1044,7 +1047,7 @@
             "type" : "string"
           },
           "label" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "defaultReviewerIds" : {
             "type" : "array",
@@ -1054,7 +1057,8 @@
             },
             "uniqueItems" : true
           }
-        }
+        },
+        "required" : [ "code", "defaultReviewerIds", "label" ]
       },
       "ThresholdsRequest" : {
         "type" : "object",
@@ -1084,7 +1088,8 @@
             "type" : "integer",
             "format" : "int32"
           }
-        }
+        },
+        "required" : [ "chaseFromDays", "lateFromDays" ]
       },
       "OpinionRequest" : {
         "type" : "object",
@@ -1111,7 +1116,8 @@
           "revisionSuperseded" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "recorded", "revisionSuperseded" ]
       },
       "CreateProjectRequest" : {
         "type" : "object",
@@ -1138,7 +1144,8 @@
             "type" : "string",
             "format" : "date-time"
           }
-        }
+        },
+        "required" : [ "createdAt", "id", "name" ]
       },
       "AddWorkPackageRequest" : {
         "type" : "object",
@@ -1189,7 +1196,8 @@
             "type" : "string",
             "enum" : [ "APPROVING", "APPROVING_WITH_RESERVES", "INFORMATIVE", "BLOCKING" ]
           }
-        }
+        },
+        "required" : [ "code", "effect", "label" ]
       },
       "LinkView" : {
         "type" : "object",
@@ -1205,7 +1213,8 @@
             "type" : "string",
             "format" : "date-time"
           }
-        }
+        },
+        "required" : [ "expiresAt", "reviewerId", "url" ]
       },
       "OnBehalfRequest" : {
         "type" : "object",
@@ -1233,7 +1242,8 @@
           "status" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "status" ]
       },
       "AddParticipantRequest" : {
         "type" : "object",
@@ -1280,18 +1290,19 @@
             "enum" : [ "ARCHITECT", "ENGINEERING_OFFICE", "CONTROL_OFFICE", "OTHER" ]
           },
           "specialty" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "email" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "phone" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "active" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "active", "email", "id", "name", "phone", "role", "specialty" ]
       },
       "CreateDocumentRequest" : {
         "type" : "object",
@@ -1325,10 +1336,10 @@
             "type" : "string"
           },
           "workPackage" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "type" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "createdAt" : {
             "type" : "string",
@@ -1339,9 +1350,14 @@
             "format" : "int32"
           },
           "latestRevision" : {
-            "$ref" : "#/components/schemas/RevisionView"
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/RevisionView"
+            }, {
+              "type" : "null"
+            } ]
           }
-        }
+        },
+        "required" : [ "createdAt", "id", "latestRevision", "revisionCount", "title", "type", "workPackage" ]
       },
       "RevisionView" : {
         "type" : "object",
@@ -1372,12 +1388,13 @@
             "type" : "string"
           },
           "externalLink" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "superseded" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "externalLink", "fileName", "id", "label", "sequence", "sha256", "sizeBytes", "submittedAt", "superseded" ]
       },
       "RevisionSummary" : {
         "type" : "object",
@@ -1408,9 +1425,10 @@
             "type" : "string"
           },
           "externalLink" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
-        }
+        },
+        "required" : [ "externalLink", "fileName", "id", "label", "sequence", "sha256", "sizeBytes", "submittedAt" ]
       },
       "SubmittedResponse" : {
         "type" : "object",
@@ -1424,7 +1442,8 @@
               "$ref" : "#/components/schemas/LinkView"
             }
           }
-        }
+        },
+        "required" : [ "links", "revision" ]
       },
       "PasswordChangeRequest" : {
         "type" : "object",
@@ -1462,7 +1481,8 @@
             "type" : "integer",
             "format" : "int32"
           }
-        }
+        },
+        "required" : [ "displayName", "email", "id", "mustChangePassword", "sessionIdleTimeoutSeconds" ]
       },
       "LoginRequest" : {
         "type" : "object",
@@ -1490,7 +1510,7 @@
             "type" : "string"
           },
           "comment" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "givenAt" : {
             "type" : "string",
@@ -1499,7 +1519,8 @@
           "enteredByOther" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "comment", "enteredByOther", "givenAt", "statusCode", "statusLabel" ]
       },
       "ReviewerPage" : {
         "type" : "object",
@@ -1528,9 +1549,14 @@
             }
           },
           "myLastOpinion" : {
-            "$ref" : "#/components/schemas/MyOpinion"
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/MyOpinion"
+            }, {
+              "type" : "null"
+            } ]
           }
-        }
+        },
+        "required" : [ "availableStatuses", "documentTitle", "linkExpiresAt", "myLastOpinion", "revisionLabel", "revisionSequence", "revisionSuperseded" ]
       },
       "StatusOption" : {
         "type" : "object",
@@ -1545,7 +1571,8 @@
             "type" : "string",
             "enum" : [ "APPROVING", "APPROVING_WITH_RESERVES", "INFORMATIVE", "BLOCKING" ]
           }
-        }
+        },
+        "required" : [ "code", "effect", "label" ]
       },
       "ProjectOverview" : {
         "type" : "object",
@@ -1582,7 +1609,8 @@
           "thresholds" : {
             "$ref" : "#/components/schemas/ThresholdsView"
           }
-        }
+        },
+        "required" : [ "createdAt", "id", "name", "participants", "statuses", "thresholds", "workPackages" ]
       },
       "OpinionLine" : {
         "type" : "object",
@@ -1598,16 +1626,17 @@
             "enum" : [ "APPROVING", "APPROVING_WITH_RESERVES", "INFORMATIVE", "BLOCKING" ]
           },
           "comment" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "givenAt" : {
             "type" : "string",
             "format" : "date-time"
           },
           "enteredBy" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           }
-        }
+        },
+        "required" : [ "comment", "effect", "enteredBy", "givenAt", "statusCode", "statusLabel" ]
       },
       "ReviewResponse" : {
         "type" : "object",
@@ -1635,7 +1664,8 @@
               "$ref" : "#/components/schemas/ReviewerLine"
             }
           }
-        }
+        },
+        "required" : [ "label", "reviewers", "revisionId", "sequence", "status", "superseded" ]
       },
       "ReviewerLine" : {
         "type" : "object",
@@ -1652,19 +1682,24 @@
             "enum" : [ "ARCHITECT", "ENGINEERING_OFFICE", "CONTROL_OFFICE", "OTHER" ]
           },
           "specialty" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "answered" : {
             "type" : "boolean"
           },
           "lastOpinion" : {
-            "$ref" : "#/components/schemas/OpinionLine"
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/OpinionLine"
+            }, {
+              "type" : "null"
+            } ]
           },
           "linkStatus" : {
-            "type" : "string",
+            "type" : [ "string", "null" ],
             "enum" : [ "ISSUED", "OPENED", "ANSWERED", "EXPIRED", "REVOKED" ]
           }
-        }
+        },
+        "required" : [ "answered", "lastOpinion", "linkStatus", "name", "reviewerId", "role", "specialty" ]
       },
       "EventView" : {
         "type" : "object",
@@ -1683,7 +1718,8 @@
             "type" : "object",
             "additionalProperties" : { }
           }
-        }
+        },
+        "required" : [ "actor", "details", "occurredAt", "type" ]
       },
       "DocumentDetail" : {
         "type" : "object",
@@ -1696,10 +1732,10 @@
             "type" : "string"
           },
           "workPackage" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "type" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "createdAt" : {
             "type" : "string",
@@ -1711,7 +1747,8 @@
               "$ref" : "#/components/schemas/RevisionView"
             }
           }
-        }
+        },
+        "required" : [ "createdAt", "id", "revisions", "title", "type", "workPackage" ]
       },
       "DashboardView" : {
         "type" : "object",
@@ -1740,7 +1777,8 @@
               "$ref" : "#/components/schemas/Row"
             }
           }
-        }
+        },
+        "required" : [ "documents", "generatedAt", "projectId", "thresholds", "totals" ]
       },
       "LatestRevision" : {
         "type" : "object",
@@ -1760,7 +1798,8 @@
             "type" : "string",
             "format" : "date-time"
           }
-        }
+        },
+        "required" : [ "id", "label", "sequence", "submittedAt" ]
       },
       "ReviewerCell" : {
         "type" : "object",
@@ -1770,38 +1809,38 @@
             "format" : "uuid"
           },
           "name" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "role" : {
-            "type" : "string",
+            "type" : [ "string", "null" ],
             "enum" : [ "ARCHITECT", "ENGINEERING_OFFICE", "CONTROL_OFFICE", "OTHER" ]
           },
           "specialty" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "state" : {
             "type" : "string",
             "enum" : [ "ANSWERED", "AWAITING" ]
           },
           "statusCode" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "statusLabel" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "effect" : {
-            "type" : "string",
+            "type" : [ "string", "null" ],
             "enum" : [ "APPROVING", "APPROVING_WITH_RESERVES", "INFORMATIVE", "BLOCKING" ]
           },
           "answeredAt" : {
-            "type" : "string",
+            "type" : [ "string", "null" ],
             "format" : "date-time"
           },
           "enteredOnBehalf" : {
             "type" : "boolean"
           },
           "waitingDays" : {
-            "type" : "integer",
+            "type" : [ "integer", "null" ],
             "format" : "int64"
           },
           "attention" : {
@@ -1809,10 +1848,11 @@
             "enum" : [ "NONE", "CHASE", "LATE" ]
           },
           "linkStatus" : {
-            "type" : "string",
+            "type" : [ "string", "null" ],
             "enum" : [ "ISSUED", "OPENED", "ANSWERED", "EXPIRED", "REVOKED" ]
           }
-        }
+        },
+        "required" : [ "answeredAt", "attention", "effect", "enteredOnBehalf", "linkStatus", "name", "reviewerId", "role", "specialty", "state", "statusCode", "statusLabel", "waitingDays" ]
       },
       "Row" : {
         "type" : "object",
@@ -1825,17 +1865,21 @@
             "type" : "string"
           },
           "workPackage" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "type" : {
-            "type" : "string"
+            "type" : [ "string", "null" ]
           },
           "revisionCount" : {
             "type" : "integer",
             "format" : "int32"
           },
           "revision" : {
-            "$ref" : "#/components/schemas/LatestRevision"
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/LatestRevision"
+            }, {
+              "type" : "null"
+            } ]
           },
           "status" : {
             "type" : "string"
@@ -1846,7 +1890,8 @@
               "$ref" : "#/components/schemas/ReviewerCell"
             }
           }
-        }
+        },
+        "required" : [ "documentId", "reviewers", "revision", "revisionCount", "status", "title", "type", "workPackage" ]
       },
       "Thresholds" : {
         "type" : "object",
@@ -1859,7 +1904,8 @@
             "type" : "integer",
             "format" : "int32"
           }
-        }
+        },
+        "required" : [ "chaseFromDays", "lateFromDays" ]
       }
     }
   }

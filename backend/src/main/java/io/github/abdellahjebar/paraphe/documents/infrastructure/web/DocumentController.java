@@ -98,6 +98,9 @@ class DocumentController {
                 document.type(), document.createdAt(), revisionViews(documents.revisions(document.id())));
     }
 
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/pdf",
+                    schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string", format = "binary")))
     @GetMapping("/revisions/{revisionId}/file")
     @PreAuthorize(GUARD)
     ResponseEntity<InputStreamResource> file(@PathVariable UUID projectId, @PathVariable UUID revisionId) {

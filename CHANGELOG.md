@@ -18,6 +18,9 @@ All notable changes. Format follows Keep a Changelog; versions are not tagged ye
   forced password change for new accounts, three separate security filter chains.
 - **HTTP API**: contractor routes under `/api`, reviewer routes under `/r/{token}`, dashboard,
   history, global error mapping, generated and committed OpenAPI contract.
+- **Exact API contract**: required and nullable properties are stated, JSON and PDF media types are declared,
+  and the error codes, field error codes and password reasons are closed sets a client can check.
+- **Web interface (in progress)**: project skeleton, theme, base components and a typed API client.
 - **Error codes**: every error carries a stable `code`; validation errors list `errors` by field.
 - **Passwords**: Argon2id, 15 characters minimum, refusal list, account and service names refused; older
   bcrypt hashes are replaced at sign-in.

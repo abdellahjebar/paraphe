@@ -62,6 +62,9 @@ class AuthController {
                         int sessionIdleTimeoutSeconds) {
     }
 
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",
+            content = @io.swagger.v3.oas.annotations.media.Content(
+                    schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = UserResponse.class)))
     @PostMapping("/login")
     ResponseEntity<?> login(@Valid @RequestBody LoginRequest body, HttpServletRequest request,
                             HttpServletResponse response) {
