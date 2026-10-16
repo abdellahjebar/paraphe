@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api/client'
 import { endSession, setLoginReason } from '@/features/auth/session'
+import { broadcastSession } from '@/features/auth/sessionChannel'
 
 /**
  * Signs out. Whatever the server answers, the interface forgets the account: someone who asked to leave must
@@ -16,6 +17,7 @@ export function useLogout() {
     onSettled: () => {
       setLoginReason('signedOut')
       endSession(client)
+      broadcastSession({ type: 'ended', reason: 'signedOut' })
     },
   })
 }

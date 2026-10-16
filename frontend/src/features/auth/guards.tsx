@@ -4,6 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { errorMessage } from '@/lib/messages.fr'
 import { SESSION } from '@/lib/texts.fr'
+import { SessionWatcher } from '@/features/auth/SessionWatcher'
 import { useLoginReason, useSession, type LoginReason, type SessionUser } from '@/features/auth/session'
 
 export const LOGIN_PATH = '/connexion'
@@ -58,7 +59,12 @@ export function RequireSession() {
       if (session.user.mustChangePassword && location.pathname !== PASSWORD_PATH) {
         return <Navigate to={PASSWORD_PATH} replace />
       }
-      return <Outlet context={session.user} />
+      return (
+        <>
+          <Outlet context={session.user} />
+          <SessionWatcher timeoutSeconds={session.user.sessionIdleTimeoutSeconds} />
+        </>
+      )
   }
 }
 

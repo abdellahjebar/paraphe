@@ -9,6 +9,9 @@ export const CSRF_HEADER = 'X-XSRF-TOKEN'
 /** Fired when the server says the session is over, so the interface can send the person to sign in again. */
 export const SESSION_ENDED_EVENT = 'paraphe:session-ended'
 
+/** Fired on every answer from the server, whatever it says: a session is kept alive by any request. */
+export const API_CONTACT_EVENT = 'paraphe:api-contact'
+
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 
 function readCookie(name: string): string | undefined {
@@ -69,6 +72,7 @@ export function createApi(options: ApiOptions = {}) {
 
   const errors: Middleware = {
     async onResponse({ response, schemaPath }) {
+      window.dispatchEvent(new CustomEvent<number>(API_CONTACT_EVENT, { detail: Date.now() }))
       if (response.ok) return response
 
       let body: unknown

@@ -53,6 +53,7 @@ Source for all rows: shadcn/ui `shadcn@4.21.4`, Base UI variant (`base-nova`), M
 | Separator | Adopted | none | |
 | Skeleton | Adopted | none | Hide it from assistive technology when it is only decoration |
 | Spinner | Adopted | none | Announce the busy state where it matters (decision 48) |
+| Alert Dialog | Adopted (Base UI) | none | Used for the session warning: focus inside, returns to the page on close; Escape means "I am here" |
 | Sonner (toaster) | Adopted | Follows our theme module instead of a Next.js theme package | A toast is never the only confirmation (decision 46) |
 
 ## Blocks
@@ -68,6 +69,8 @@ Source for all rows: shadcn/ui `shadcn@4.21.4`, Base UI variant (`base-nova`), M
 | ErrorSummary | `components/app/` | Lists what went wrong at the top of a form, takes the focus on each failed attempt, links to each field |
 | PasswordInput | `components/app/` | A password field with a show/hide control; never blocks pasting |
 | LoginForm | `features/auth/` | The sign-in form: checked when sent, nothing cleared, one request at a time |
+| ChangePasswordForm | `features/auth/` | The mandatory first password change: no confirmation field (the password can be shown), the server says why a password is refused |
+| SessionWatcher | `features/auth/` | Keeps the session alive while the person works, warns two minutes before the end with a countdown, follows the other tabs |
 
 ## What the command-line tool added that we did not keep
 

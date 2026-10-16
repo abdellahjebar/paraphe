@@ -65,3 +65,11 @@ export const COMING = {
   reviewTitle: 'Relecture',
   text: 'Cet écran arrive bientôt.',
 } as const
+
+export const SESSION_WARNING = {
+  title: 'Votre session va se terminer',
+  description:
+    'Pour votre sécurité, la session se ferme après un moment sans activité. Elle se terminera dans',
+  stay: 'Rester connecté',
+  signOut: 'Se déconnecter',
+} as const
