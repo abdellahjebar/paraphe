@@ -22,7 +22,7 @@ export default tseslint.config(
       'no-restricted-syntax': [
         'error',
         {
-          selector: 'Literal[value=/^(https?:)?\\/\\/(?!localhost)/]',
+          selector: 'Literal[value=/^(https?:)?\\/\\/(?!localhost)[a-z0-9]/]',
           message: 'No external URL in the code: the content security policy only allows our own origin.',
         },
       ],

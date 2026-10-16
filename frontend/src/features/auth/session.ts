@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { api, SESSION_ENDED_EVENT } from '@/lib/api/client'
 import { isApiError } from '@/lib/api/errors'
 import type { components } from '@/lib/api/schema'
@@ -50,11 +50,40 @@ export function endSession(client: QueryClient): void {
   client.setQueryData(SESSION_KEY, null)
 }
 
+export type LoginReason = 'ended' | 'signedOut'
+
+const reasonStore: { value: LoginReason | undefined; listeners: Set<() => void> } = {
+  value: undefined,
+  listeners: new Set(),
+}
+
+/** Remembers why the person is no longer signed in, so the sign-in page can say so. Cleared by signing in. */
+export function setLoginReason(reason: LoginReason | undefined): void {
+  reasonStore.value = reason
+  reasonStore.listeners.forEach((listener) => listener())
+}
+
+function subscribeToReason(listener: () => void) {
+  reasonStore.listeners.add(listener)
+  return () => reasonStore.listeners.delete(listener)
+}
+
+export function useLoginReason(): LoginReason | undefined {
+  return useSyncExternalStore(
+    subscribeToReason,
+    () => reasonStore.value,
+    () => undefined,
+  )
+}
+
 /** The server says the session is over: the interface forgets it at once, wherever the person was. */
 export function useSessionEndedListener(): void {
   const client = useQueryClient()
   useEffect(() => {
-    const onEnded = () => endSession(client)
+    const onEnded = () => {
+      setLoginReason('ended')
+      endSession(client)
+    }
     window.addEventListener(SESSION_ENDED_EVENT, onEnded)
     return () => window.removeEventListener(SESSION_ENDED_EVENT, onEnded)
   }, [client])

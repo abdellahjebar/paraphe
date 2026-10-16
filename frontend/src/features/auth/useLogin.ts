@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api/client'
-import { SESSION_KEY, type SessionUser } from '@/features/auth/session'
+import { setLoginReason, SESSION_KEY, type SessionUser } from '@/features/auth/session'
 
 export interface Credentials {
   email: string
@@ -23,6 +23,7 @@ export function useLogin() {
       // Whatever an earlier person left in memory is dropped before this one is shown anything.
       client.removeQueries({ predicate: (query) => query.queryKey[0] !== SESSION_KEY[0] })
       client.setQueryData(SESSION_KEY, user)
+      setLoginReason(undefined)
     },
   })
 }

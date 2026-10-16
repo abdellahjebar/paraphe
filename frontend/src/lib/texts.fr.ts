@@ -41,3 +41,27 @@ export const CHANGE_PASSWORD = {
   submitting: 'Enregistrement en cours',
   failureTitle: 'Le mot de passe n’a pas été modifié',
 } as const
+
+export const SESSION = {
+  checking: 'Vérification de votre connexion en cours',
+  errorTitle: 'Impossible de vérifier votre connexion',
+  retry: 'Réessayer',
+  ended: 'Votre session est terminée. Connectez-vous à nouveau.',
+  signedOut: 'Vous avez été déconnecté.',
+  signOut: 'Se déconnecter',
+  signingOut: 'Déconnexion en cours',
+} as const
+
+export const NOT_FOUND = {
+  pageTitle: 'Page introuvable',
+  title: 'Cette page n’existe pas',
+  text: 'L’adresse est peut-être incomplète, ou la page a été déplacée.',
+  back: 'Retourner à l’accueil',
+} as const
+
+/** Placeholders for the screens that arrive with the next steps. */
+export const COMING = {
+  projectsTitle: 'Mes chantiers',
+  reviewTitle: 'Relecture',
+  text: 'Cet écran arrive bientôt.',
+} as const

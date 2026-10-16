@@ -1,8 +1,6 @@
-import { LoginPage } from '@/routes/LoginPage'
-import { ThemeCheck } from '@/routes/ThemeCheck'
+import { RouterProvider } from 'react-router/dom'
+import type { createAppRouter } from '@/app/router'
 
-/** Temporary: the router arrives with the shell. Until then #theme shows the theme page. */
-export function App() {
-  if (window.location.hash === '#theme') return <ThemeCheck />
-  return <LoginPage onSignedIn={() => undefined} />
+export function App({ router }: { router: ReturnType<typeof createAppRouter> }) {
+  return <RouterProvider router={router} />
 }
