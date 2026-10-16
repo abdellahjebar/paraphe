@@ -1,14 +1,21 @@
-import { useEffect, useState } from 'react'
-import { applyTheme, readTheme, saveTheme, type Theme } from '@/lib/theme/theme'
+import { InfoIcon, TriangleAlertIcon } from 'lucide-react'
+import { useEffect } from 'react'
+import { toast } from 'sonner'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Spinner } from '@/components/ui/spinner'
+import { Toaster } from '@/components/ui/sonner'
+import { applyTheme, saveTheme, type Theme } from '@/lib/theme/theme'
+import { useThemeChoice } from '@/lib/theme/useTheme'
 
 // Tailwind only generates classes that appear in full in the source, so no class name is built from a variable.
-const SURFACES = [
-  ['background', 'bg-background text-foreground'],
-  ['card', 'bg-card text-card-foreground'],
-  ['muted', 'bg-muted text-foreground'],
-  ['primary', 'bg-primary text-primary-foreground'],
-  ['destructive', 'bg-destructive text-destructive-foreground'],
-] as const
 const STATES = [
   ['Approuvé', 'bg-status-approved-soft text-status-approved'],
   ['Approuvé avec réserves', 'bg-status-reserves-soft text-status-reserves'],
@@ -20,44 +27,45 @@ const STATES = [
   ['En retard', 'bg-status-late-soft text-status-late'],
 ] as const
 
-/** A page to look at the theme in both modes. Temporary: it goes away when the real screens exist. */
+const CHOICES: ReadonlyArray<readonly [Theme, string]> = [
+  ['light', 'Clair'],
+  ['dark', 'Sombre'],
+  ['system', 'Système'],
+]
+
+/** A page to look at the theme and the base components in both modes. Temporary: it goes away with the real screens. */
 export function ThemeCheck() {
-  const [theme, setTheme] = useState<Theme>(() => readTheme())
+  const theme = useThemeChoice()
 
   useEffect(() => {
     // #dark lets a screenshot be taken without touching the stored choice.
     if (window.location.hash === '#dark') applyTheme('dark')
   }, [])
 
-  function choose(next: Theme) {
-    setTheme(next)
-    saveTheme(next)
-  }
-
   return (
     <main className="mx-auto max-w-5xl space-y-10 px-4 py-8">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold">Paraphe</h1>
-          <p className="text-muted-foreground">Contrôle du thème « Encre révisée »</p>
+          <p className="text-muted-foreground">Contrôle du thème et des composants de base</p>
         </div>
         <div role="group" aria-label="Thème" className="flex gap-2">
-          {(['light', 'dark', 'system'] as const).map((value) => (
-            <button
+          {CHOICES.map(([value, label]) => (
+            <Button
               key={value}
               type="button"
+              variant={theme === value ? 'default' : 'outline'}
               aria-pressed={theme === value}
-              onClick={() => choose(value)}
-              className="min-h-11 rounded-md border border-input px-4 font-semibold aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+              onClick={() => saveTheme(value)}
             >
-              {value === 'light' ? 'Clair' : value === 'dark' ? 'Sombre' : 'Système'}
-            </button>
+              {label}
+            </Button>
           ))}
         </div>
       </header>
 
-      <section aria-labelledby="t-type" className="space-y-3">
-        <h2 id="t-type" className="text-xl font-semibold">
+      <section aria-labelledby="c-type" className="space-y-3">
+        <h2 id="c-type" className="text-xl font-semibold">
           Typographie
         </h2>
         <p className="text-2xl font-semibold">Plan de poutres R+1</p>
@@ -66,28 +74,12 @@ export function ThemeCheck() {
           « À reprendre : l&apos;épaisseur de la dalle haute ne correspond pas à la note de calcul. Voir
           œuvre, façade nord, coupe A-A. »
         </p>
-        <p className="font-semibold">
-          STR-EXE-PLN-0142-C&nbsp;&nbsp;14/10/2026&nbsp;&nbsp;9 jours d&apos;attente
-        </p>
         <p className="text-2xl font-semibold">Il1 | O0 | rn m | S5 | B8</p>
       </section>
 
-      <section aria-labelledby="t-colors" className="space-y-3">
-        <h2 id="t-colors" className="text-xl font-semibold">
-          Surfaces
-        </h2>
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-          {SURFACES.map(([name, classes]) => (
-            <li key={name} className={`rounded-lg border border-border p-4 text-sm font-semibold ${classes}`}>
-              {name}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section aria-labelledby="t-states" className="space-y-3">
-        <h2 id="t-states" className="text-xl font-semibold">
-          États
+      <section aria-labelledby="c-states" className="space-y-3">
+        <h2 id="c-states" className="text-xl font-semibold">
+          États (composant à venir : StatusBadge)
         </h2>
         <ul className="flex flex-wrap gap-3">
           {STATES.map(([label, classes]) => (
@@ -98,29 +90,89 @@ export function ThemeCheck() {
         </ul>
       </section>
 
-      <section aria-labelledby="t-form" className="max-w-sm space-y-3">
-        <h2 id="t-form" className="text-xl font-semibold">
-          Champ et bouton
+      <section aria-labelledby="c-buttons" className="space-y-3">
+        <h2 id="c-buttons" className="text-xl font-semibold">
+          Boutons et pastilles
         </h2>
-        <label htmlFor="demo" className="block font-semibold">
-          Adresse e-mail
-        </label>
-        <input
-          id="demo"
-          type="email"
-          autoComplete="username"
-          className="min-h-12 w-full rounded-md border-2 border-input bg-background px-3"
-        />
-        <button
-          type="button"
-          className="min-h-11 w-full rounded-md bg-primary px-4 font-semibold text-primary-foreground"
-        >
-          Se connecter
-        </button>
-        <p>
-          Un <a href="#t-form">lien</a> dans un texte.
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button>Se connecter</Button>
+          <Button variant="outline">Annuler</Button>
+          <Button variant="secondary">Copier le lien</Button>
+          <Button variant="ghost">Voir</Button>
+          <Button variant="destructive">Révoquer le lien</Button>
+          <Button disabled>
+            <Spinner /> Envoi en cours
+          </Button>
+          <Button variant="link">Mot de passe</Button>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge>Badge</Badge>
+          <Badge variant="secondary">Secondaire</Badge>
+          <Badge variant="outline">Contour</Badge>
+          <Badge variant="destructive">Destructif</Badge>
+          <Avatar>
+            <AvatarFallback>KL</AvatarFallback>
+          </Avatar>
+          <Button type="button" variant="outline" onClick={() => toast.success('Avis enregistré')}>
+            Afficher une notification
+          </Button>
+        </div>
       </section>
+
+      <section aria-labelledby="c-form" className="grid gap-6 md:grid-cols-2">
+        <h2 id="c-form" className="sr-only">
+          Formulaire
+        </h2>
+        <Card>
+          <CardHeader>
+            <CardTitle>Connexion</CardTitle>
+            <CardDescription>Saisissez votre adresse e-mail et votre mot de passe.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Field>
+              <FieldLabel htmlFor="check-email">Adresse e-mail</FieldLabel>
+              <Input id="check-email" type="email" autoComplete="username" spellCheck={false} />
+            </Field>
+            <Field data-invalid="true">
+              <FieldLabel htmlFor="check-password">Mot de passe</FieldLabel>
+              <Input
+                id="check-password"
+                type="password"
+                autoComplete="current-password"
+                aria-invalid="true"
+              />
+              <FieldDescription>15 caractères au minimum</FieldDescription>
+              <FieldError>Le mot de passe doit comporter au moins 15 caractères.</FieldError>
+            </Field>
+          </CardContent>
+          <Separator />
+          <CardFooter>
+            <Button className="w-full">Se connecter</Button>
+          </CardFooter>
+        </Card>
+
+        <div className="space-y-4">
+          <Alert>
+            <InfoIcon />
+            <AlertTitle>Ces liens ne seront plus affichés</AlertTitle>
+            <AlertDescription>Copiez-les maintenant : ils ne peuvent pas être retrouvés.</AlertDescription>
+          </Alert>
+          <Alert variant="destructive">
+            <TriangleAlertIcon />
+            <AlertTitle>Ce lien n&apos;est plus valable</AlertTitle>
+            <AlertDescription>
+              Il a peut-être expiré, avoir été remplacé par un lien plus récent, ou ne pas être complet.
+            </AlertDescription>
+          </Alert>
+          <div className="space-y-2" aria-hidden="true">
+            <Skeleton className="h-6 w-2/3" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+          </div>
+        </div>
+      </section>
+
+      <Toaster />
     </main>
   )
 }

@@ -40,12 +40,10 @@
 }
 
 @import './theme.css';
+@import 'tw-animate-css';
+@import './shadcn-base.css';
 
 @layer base {
-  * {
-    border-color: var(--color-border);
-  }
-
   html {
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
@@ -62,12 +60,16 @@
     text-rendering: optimizeLegibility;
   }
 
+  * {
+    border-color: var(--border);
+  }
+
   a {
     color: var(--link);
     text-underline-offset: 0.2em;
   }
 
-  /* One visible focus ring for everything: 3px, offset, 3:1 against the page in both themes. */
+  /* One visible focus ring for everything that is not a component with its own ring: 3px, 3:1 in both themes. */
   :focus-visible {
     outline: 3px solid var(--ring);
     outline-offset: 2px;

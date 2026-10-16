@@ -6,6 +6,7 @@
 export type Theme = 'light' | 'dark' | 'system'
 
 export const THEME_KEY = 'paraphe-theme'
+export const THEME_EVENT = 'paraphe-theme-change'
 export const DEFAULT_THEME: Theme = 'light'
 
 export function isTheme(value: unknown): value is Theme {
@@ -32,6 +33,7 @@ export function isDark(theme: Theme): boolean {
 export function applyTheme(theme: Theme): void {
   const root = document.documentElement
   root.classList.toggle('dark', isDark(theme))
+  window.dispatchEvent(new Event(THEME_EVENT))
 }
 
 export function saveTheme(theme: Theme): void {

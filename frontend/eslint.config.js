@@ -16,6 +16,8 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       '@typescript-eslint/consistent-type-imports': 'error',
+      // The shadcn CLI adds these; we use our own cn() and our own theme. See docs/frontend/components.md.
+      'no-restricted-imports': ['error', { paths: ['cn', 'next-themes', 'shadcn'] }],
       // The content security policy forbids anything that is not our own origin, so the code must not name one.
       'no-restricted-syntax': [
         'error',
@@ -55,6 +57,24 @@ export default tseslint.config(
         },
       ],
     },
+  },
+  {
+    // Every use of <Label> must name its field (htmlFor) or wrap it; the definition itself is generic.
+    files: ['src/**/*.{ts,tsx}'],
+    rules: {
+      'jsx-a11y/label-has-associated-control': [
+        'error',
+        { labelComponents: ['Label'], controlComponents: ['Input', 'Textarea'], assert: 'either' },
+      ],
+    },
+  },
+  {
+    files: ['src/components/ui/label.tsx', 'src/components/ui/field.tsx'],
+    rules: { 'jsx-a11y/label-has-associated-control': 'off' },
+  },
+  {
+    files: ['scripts/**/*.mjs', 'vite.config.ts'],
+    languageOptions: { globals: globals.node },
   },
   {
     files: ['**/*.test.{ts,tsx}', 'src/test/**'],
