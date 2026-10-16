@@ -61,6 +61,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "ui:normalize": "node scripts/normalize-ui.mjs",
-    "api:generate": "openapi-typescript ../docs/api/openapi.json -o src/lib/api/schema.d.ts"
+    "api:generate": "openapi-typescript ../docs/api/openapi.json -o src/lib/api/schema.d.ts",
+    "e2e": "playwright test"
   }
 }

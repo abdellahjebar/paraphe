@@ -42,6 +42,40 @@ Check it is up:
 curl http://localhost:8080/actuator/health
 ```
 
+## Run the end-to-end tests
+
+They drive a real browser against the real backend and a throw-away PostgreSQL, so they need all three
+running. Use passphrases of your own for the two accounts; nothing here is kept.
+
+```
+cd backend
+docker compose up -d
+export PARAPHE_BOOTSTRAP_EMAIL=admin@exemple.test
+export PARAPHE_BOOTSTRAP_PASSWORD='<a passphrase of your own, 15 characters or more>'
+export PARAPHE_ADMIN_CREATE_USER_EMAIL=nouvelle@exemple.test        # must choose its password at first sign-in
+export PARAPHE_ADMIN_CREATE_USER_PASSWORD='<another passphrase of your own>'
+export SESSION_IDLE_TIMEOUT=90s                                      # so the session expiry can be watched
+./mvnw spring-boot:run
+```
+
+In a second terminal, the front end (it forwards `/api` and `/r` to the backend):
+
+```
+cd frontend
+npm run dev
+```
+
+In a third, the tests (they use the Microsoft Edge already on the machine):
+
+```
+cd frontend
+export E2E_ADMIN_PASSWORD='<the first passphrase>' E2E_NEW_PASSWORD='<the second passphrase>'
+npm run e2e                                   # about two minutes: one scenario waits for a real session to expire
+```
+
+The accounts are created once, so start again from an empty database for each run:
+`docker compose down -v`, then `docker compose up -d`.
+
 ## The two database roles
 
 | Role | Used by | Can |

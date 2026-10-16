@@ -5,7 +5,17 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { ignores: ['dist', 'public', 'coverage', 'playwright-report', 'test-results', 'src/lib/api/schema.d.ts'] },
+  {
+    ignores: [
+      'dist',
+      'public',
+      'coverage',
+      'playwright-report',
+      'test-results',
+      'src/lib/api/schema.d.ts',
+      'test-results',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   jsxA11y.flatConfigs.recommended,
@@ -73,7 +83,7 @@ export default tseslint.config(
     rules: { 'jsx-a11y/label-has-associated-control': 'off' },
   },
   {
-    files: ['scripts/**/*.mjs', 'vite.config.ts'],
+    files: ['scripts/**/*.mjs', 'vite.config.ts', 'playwright.config.ts', 'e2e/**'],
     languageOptions: { globals: globals.node },
   },
   {
