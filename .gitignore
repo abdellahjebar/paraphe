@@ -14,3 +14,10 @@ docs/research/
 Thumbs.db
 .vscode/
 .idea/
+
+# Front end build and dependencies
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+frontend/playwright-report/
+frontend/test-results/
