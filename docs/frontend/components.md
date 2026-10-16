@@ -45,7 +45,7 @@ Source for all rows: shadcn/ui `shadcn@4.21.4`, Base UI variant (`base-nova`), M
 | Button | Adopted | Sizes (44 px by default, 36 px small, 48 px large), full-opacity focus ring | Decisions 15 and 24 |
 | Input | Adopted | Height 44 px | Border uses `--input` (3:1) |
 | Label | Adopted | Larger and bolder text | Lint rule requires `htmlFor` or nesting at every use |
-| Field | Adopted | none yet | To do: hidden "Erreur :" prefix and `role="alert"` on `FieldError` (decision 38) |
+| Field | Adopted | `FieldError` has the hidden "Erreur :" prefix, and no `role="alert"`: the summary at the top announces, a second alert would read everything twice | Decision 38 |
 | Card | Adopted | none | |
 | Alert | Adopted | none | Carries `role="alert"`: use it only for real warnings |
 | Badge | Adopted | Height 24 px, text size | Generic; the status badge is our own component |
@@ -54,6 +54,20 @@ Source for all rows: shadcn/ui `shadcn@4.21.4`, Base UI variant (`base-nova`), M
 | Skeleton | Adopted | none | Hide it from assistive technology when it is only decoration |
 | Spinner | Adopted | none | Announce the busy state where it matters (decision 48) |
 | Sonner (toaster) | Adopted | Follows our theme module instead of a Next.js theme package | A toast is never the only confirmation (decision 46) |
+
+## Blocks
+
+| Block | Decision | Note |
+|---|---|---|
+| `login-05` (shadcn registry, read in full on 2026-10-16) | **Layout only** | It is an e-mail only form with "Continue with Apple" and "Continue with Google" buttons, a "Sign up" link, a terms notice, the `cn` package and an internal icon component. None of that is kept: the page is a centred card with our own fields, texts and behaviour. |
+
+## Our own components
+
+| Component | Where | What it does |
+|---|---|---|
+| ErrorSummary | `components/app/` | Lists what went wrong at the top of a form, takes the focus on each failed attempt, links to each field |
+| PasswordInput | `components/app/` | A password field with a show/hide control; never blocks pasting |
+| LoginForm | `features/auth/` | The sign-in form: checked when sent, nothing cleared, one request at a time |
 
 ## What the command-line tool added that we did not keep
 

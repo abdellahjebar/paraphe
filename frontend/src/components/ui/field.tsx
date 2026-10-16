@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { COMMON } from '@/lib/texts.fr'
 import { cn } from '@/lib/utils'
 
 import { Label } from '@/components/ui/label'
@@ -195,11 +196,13 @@ function FieldError({
 
   return (
     <div
-      role="alert"
       data-slot="field-error"
-      className={cn('text-sm font-normal text-destructive', className)}
+      className={cn('text-base font-normal text-destructive', className)}
       {...props}
     >
+      {/* Read by screen readers so the message is announced as an error. No role="alert" here: the summary at the
+          top of the form is the one that announces, and a second alert would read everything twice. */}
+      <span className="sr-only">{COMMON.errorPrefix}</span>
       {content}
     </div>
   )
